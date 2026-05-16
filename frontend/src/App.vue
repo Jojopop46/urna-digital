@@ -3,22 +3,22 @@
   <NetworkStatus />
   <nav class="nav-bar" :class="{ 'nav-open': menuOpen }">
     <router-link to="/" class="logo">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-building-2"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/></svg>
-      <span class="logo-text">IEE | Participación Digital</span>
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/></svg>
+      <span class="logo-text">Urna Digital</span>
     </router-link>
-    <button class="menu-toggle" @click="menuOpen = !menuOpen" :aria-expanded="menuOpen" aria-label="Abrir menú de navegación">
-      <svg v-if="!menuOpen" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg>
-      <svg v-else width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    <button class="menu-toggle" @click="menuOpen = !menuOpen" :aria-expanded="menuOpen" :aria-label="menuOpen ? 'Cerrar menú' : 'Abrir menú'">
+      <svg v-if="!menuOpen" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg>
+      <svg v-else width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
     </button>
     <div class="nav-links" :class="{ open: menuOpen }">
-      <LanguageSwitcher />
-      <button @click="toggleTheme" class="theme-toggle" :aria-label="theme==='light' ? 'Activar modo oscuro' : 'Activar modo claro'" title="Cambiar tema">
-        <svg v-if="theme === 'light'" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
-        <svg v-else width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
-      </button>
       <router-link to="/" @click="menuOpen = false">{{ $t('nav.home') }}</router-link>
       <router-link to="/transparencia" @click="menuOpen = false">{{ $t('nav.transparency') }}</router-link>
       <router-link to="/verificar" @click="menuOpen = false">{{ $t('nav.verify') }}</router-link>
+      <LanguageSwitcher />
+      <button @click="toggleTheme" class="theme-toggle" :aria-label="theme==='light' ? 'Activar modo oscuro' : 'Activar modo claro'" title="Cambiar tema">
+        <svg v-if="theme === 'light'" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+        <svg v-else width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/></svg>
+      </button>
       <router-link to="/urna" class="btn btn-primary nav-vote" @click="menuOpen = false">{{ $t('nav.vote') }}</router-link>
     </div>
   </nav>
@@ -51,9 +51,23 @@ onMounted(() => {
 });
 </script>
 
-<style>
-.theme-toggle { background:transparent; border:none; color:var(--text-muted); cursor:pointer; padding:0.5rem; display:flex; align-items:center; justify-content:center; border-radius:50%; transition:all 0.2s; }
-.theme-toggle:hover { background:var(--panel-border); color:var(--primary); }
+<style scoped>
+.theme-toggle {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: var(--transition);
+}
+.theme-toggle:hover {
+  background: var(--primary-light);
+  color: var(--primary);
+}
 
 .menu-toggle {
   display: none;
@@ -62,6 +76,7 @@ onMounted(() => {
   color: var(--text-muted);
   cursor: pointer;
   padding: 0.5rem;
+  border-radius: var(--radius-sm);
 }
 
 .logo-text {
@@ -88,9 +103,10 @@ onMounted(() => {
     border-bottom: 1px solid var(--panel-border);
     flex-direction: column;
     padding: 1rem;
-    gap: 0.75rem;
-    box-shadow: var(--panel-shadow);
+    gap: 0.5rem;
+    box-shadow: var(--panel-shadow-lg);
     z-index: 99;
+    align-items: stretch;
   }
   .nav-links.open {
     display: flex;
@@ -100,6 +116,7 @@ onMounted(() => {
     width: 100%;
     text-align: center;
     margin: 0 !important;
+    justify-content: center;
   }
   .nav-vote {
     margin-top: 0.5rem;

@@ -1,13 +1,15 @@
 <template>
-  <div class="lang-switcher" role="navigation" :aria-label="$t('language.select')">
+  <div class="lang-switcher" role="group" :aria-label="$t('language.select')">
     <button
       v-for="lang in langs"
       :key="lang.code"
       :aria-pressed="locale === lang.code"
-      :aria-label="`Cambiar idioma a ${lang.name}`"
       @click="setLang(lang.code)"
-      :class="{ active: locale === lang.code }"
-    >{{ lang.label }}</button>
+      :class="['lang-btn', { active: locale === lang.code }]"
+      :title="lang.name"
+    >
+      {{ lang.flag }} {{ lang.label }}
+    </button>
   </div>
 </template>
 
@@ -16,9 +18,9 @@ import { useI18n } from 'vue-i18n'
 const { locale } = useI18n()
 
 const langs = [
-  { code: 'es', label: 'Español', name: 'Español estándar' },
-  { code: 'es-easy', label: 'Fácil', name: 'Español fácil de leer' },
-  { code: 'rar', label: 'Rarámuri', name: 'Idioma Rarámuri' }
+  { code: 'es', label: 'Español', name: 'Español estándar', flag: '🇲🇽' },
+  { code: 'es-easy', label: 'Fácil', name: 'Español fácil de leer', flag: '🇲🇽' },
+  { code: 'rar', label: 'Rarámuri', name: 'Idioma Rarámuri', flag: '🏔️' }
 ]
 
 const setLang = (code: string) => {
@@ -33,23 +35,29 @@ const setLang = (code: string) => {
   gap: 0.25rem;
   align-items: center;
 }
-.lang-switcher button {
+.lang-btn {
   background: transparent;
-  border: 1px solid var(--panel-border);
+  border: 1px solid transparent;
   color: var(--text-muted);
-  padding: 0.25rem 0.5rem;
-  border-radius: 4px;
-  font-size: 0.75rem;
+  padding: 0.375rem 0.625rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.8rem;
+  font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: var(--transition);
+  white-space: nowrap;
 }
-.lang-switcher button.active {
-  background: var(--primary);
-  color: white;
-  border-color: var(--primary);
-}
-.lang-switcher button:hover:not(.active) {
-  border-color: var(--primary);
+.lang-btn.active {
+  background: var(--primary-light);
   color: var(--primary);
+  border-color: var(--primary);
+}
+.lang-btn:hover:not(.active) {
+  background: var(--bg-color);
+  color: var(--text-main);
+}
+@media (max-width: 768px) {
+  .lang-switcher { justify-content: center; }
+  .lang-btn { font-size: 0.875rem; padding: 0.5rem 0.75rem; }
 }
 </style>

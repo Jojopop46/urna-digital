@@ -1,74 +1,88 @@
 <template>
-  <div class="admin-dashboard" style="max-width:1000px;margin:0 auto;padding:2rem;">
-    <!-- Login Section -->
-    <div v-if="!auth" class="glass-panel login-card">
-      <div style="text-align:center;margin-bottom:2rem;">
-        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/></svg>
-        <h2 style="margin-top:1rem;">Acceso Administrativo IEE</h2>
+  <div class="admin-container">
+    <!-- Login -->
+    <div v-if="!auth" class="login-wrapper">
+      <div class="glass-panel login-card">
+        <div class="login-icon">🏛️</div>
+        <h2>Panel Administrativo IEE</h2>
+        <p>Acceso exclusivo para personal autorizado del Instituto.</p>
+        <div class="form-group">
+          <label>Usuario</label>
+          <input v-model="user" type="text" class="form-input" placeholder="Ej. IEE1" @keyup.enter="login">
+        </div>
+        <div class="form-group">
+          <label>Contraseña</label>
+          <input v-model="pwd" type="password" class="form-input" placeholder="Contraseña" @keyup.enter="login">
+        </div>
+        <button @click="login" class="btn btn-primary w-full">Ingresar al Sistema</button>
+        <p v-if="loginError" class="login-error">{{ loginError }}</p>
       </div>
-      <div class="form-group" style="margin-bottom:1rem;">
-        <label>Usuario</label>
-        <input v-model="user" type="text" class="form-input" placeholder="Ej. IEE1" @keyup.enter="login">
-      </div>
-      <div class="form-group" style="margin-bottom:1.5rem;">
-        <label>Contraseña</label>
-        <input v-model="pwd" type="password" class="form-input" placeholder="Contraseña" @keyup.enter="login">
-      </div>
-      <button @click="login" class="btn btn-primary w-full">Ingresar al Sistema</button>
-      <p v-if="loginError" style="color:var(--danger);margin-top:1rem;text-align:center;font-weight:600;">{{ loginError }}</p>
     </div>
 
-    <!-- Admin Dashboard -->
-    <div v-else>
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2rem;flex-wrap:wrap;gap:1rem;">
-        <h2>Panel de Administración IEE</h2>
-        <button @click="logout" class="btn btn-outline" style="padding:0.5rem 1rem;">Cerrar Sesión</button>
+    <!-- Dashboard -->
+    <div v-else class="dashboard">
+      <div class="dashboard-header">
+        <div>
+          <h2>Panel de Administración</h2>
+          <p class="header-sub">Gestión de propuestas y monitoreo de votación</p>
+        </div>
+        <button @click="logout" class="btn btn-outline">Cerrar Sesión</button>
       </div>
 
       <div class="dashboard-grid">
-        <!-- Settings Column -->
+        <!-- Settings -->
         <div class="settings-col">
-          <div class="glass-panel" style="padding:1.5rem;margin-bottom:1.5rem;">
-            <h3 style="margin-bottom:1rem;font-size:1.1rem;">Configuración de Votación</h3>
-            <label style="font-size:0.9rem;">Fecha Límite Votación:</label>
-            <input type="datetime-local" v-model="s.dl" class="form-input" style="margin-top:0.5rem;">
+          <div class="glass-panel card">
+            <h3>⚙️ Configuración</h3>
+            <label>Fecha límite de votación</label>
+            <input type="datetime-local" v-model="s.dl" class="form-input">
           </div>
 
-          <div class="glass-panel" style="padding:1.5rem;">
-            <h3 style="margin-bottom:1rem;font-size:1.1rem;">Gestión de Administradores</h3>
-            <div class="form-group" style="margin-bottom:1rem;">
-              <label style="font-size:0.9rem;">Nuevo Usuario</label>
-              <input v-model="newUser" type="text" class="form-input" style="margin-top:0.5rem;" placeholder="Ej. IEE2">
+          <div class="glass-panel card">
+            <h3>👤 Administradores</h3>
+            <div class="form-group">
+              <label>Nuevo usuario</label>
+              <input v-model="newUser" type="text" class="form-input" placeholder="Ej. IEE2">
             </div>
-            <div class="form-group" style="margin-bottom:1rem;">
-              <label style="font-size:0.9rem;">Contraseña de Usuario</label>
-              <input v-model="newPwd" type="password" class="form-input" style="margin-top:0.5rem;" placeholder="Mínimo 4 caracteres">
+            <div class="form-group">
+              <label>Contraseña</label>
+              <input v-model="newPwd" type="password" class="form-input" placeholder="Mínimo 4 caracteres">
             </div>
-            <button @click="createUser" class="btn btn-primary w-full" :disabled="!newUser || !newPwd || newPwd.length < 4">Añadir Administrador</button>
-            <p v-if="pwdMsg" style="color:var(--success);margin-top:0.5rem;font-size:0.9rem;font-weight:600;">{{ pwdMsg }}</p>
+            <button @click="createUser" class="btn btn-primary w-full" :disabled="!newUser || !newPwd || newPwd.length < 4">Crear administrador</button>
+            <p v-if="pwdMsg" :class="['msg', pwdMsg.includes('ya existe') ? 'msg-error' : 'msg-success']">{{ pwdMsg }}</p>
           </div>
         </div>
 
-        <!-- Proposals Column -->
+        <!-- Proposals -->
         <div class="proposals-col">
-          <h3 style="margin-bottom:1rem;">Propuestas Pendientes de Aprobación</h3>
-          <transition-group name="fade" tag="div" style="display:flex;flex-direction:column;gap:1rem;">
-            <div v-for="p in pending" :key="p.id" class="glass-panel" style="padding:1.5rem;display:flex;flex-direction:column;">
-              <h4 style="color:var(--primary);margin-bottom:0.5rem;font-size:1.1rem;">{{p.titulo}}</h4>
-              <p style="color:var(--text-muted);font-size:0.95rem;margin-bottom:1rem;line-height:1.5;">{{p.descripcion}}</p>
-              <div style="display:flex;gap:0.5rem;margin-top:auto;">
-                <button @click="p.status='approved'" class="btn btn-primary" style="flex:1;">Aprobar</button>
-                <button @click="p.status='rejected'" class="btn btn-outline" style="flex:1;color:var(--danger);border-color:var(--panel-border);">Rechazar</button>
+          <div class="section-title-row">
+            <h3>📋 Propuestas Pendientes</h3>
+            <span class="badge-count" v-if="pending.length">{{ pending.length }}</span>
+          </div>
+
+          <transition-group name="fade" tag="div" class="proposals-list">
+            <div v-for="p in pending" :key="p.id" class="glass-panel proposal-item">
+              <h4>{{ p.titulo }}</h4>
+              <p>{{ p.descripcion }}</p>
+              <div class="proposal-meta">
+                <span>📍 {{ p.municipio }}</span>
+                <span>💰 {{ p.costo }}</span>
+              </div>
+              <div class="proposal-actions">
+                <button @click="p.status='approved'" class="btn btn-primary btn-sm">✓ Aprobar</button>
+                <button @click="p.status='rejected'" class="btn btn-outline btn-sm" style="color:var(--danger);border-color:var(--panel-border);">✕ Rechazar</button>
               </div>
             </div>
           </transition-group>
-          <div v-if="!pending.length" class="glass-panel" style="padding:2rem;text-align:center;color:var(--text-muted);">
-            No hay propuestas pendientes para revisar.
+
+          <div v-if="!pending.length" class="glass-panel empty-card">
+            <div class="empty-icon">🎉</div>
+            <p>No hay propuestas pendientes</p>
           </div>
         </div>
       </div>
 
-      <!-- Live Results Chart -->
+      <!-- Live Chart -->
       <LiveResultsChart process-id="proceso_2025" />
     </div>
   </div>
@@ -88,7 +102,6 @@ const loginError = ref('');
 const pwdMsg = ref('');
 const auth = ref(localStorage.getItem('auth')==='1');
 
-// Setup credentials if not exist
 let adminUsers = JSON.parse(localStorage.getItem('admin_users') || '[]');
 if (adminUsers.length === 0) {
   adminUsers = [{ username: 'IEE1', password: '1234' }];
@@ -97,16 +110,16 @@ if (adminUsers.length === 0) {
 
 const pending = computed(() => s.props.filter((x:any) => x.status==='pending'));
 
-const login = () => { 
+const login = () => {
   loginError.value = '';
   const users = JSON.parse(localStorage.getItem('admin_users') || '[]');
   const validUser = users.find((u:any) => u.username === user.value && u.password === pwd.value);
-  if(validUser){ 
-    auth.value=true; 
-    localStorage.setItem('auth','1'); 
-  } else { 
-    loginError.value = 'Usuario o contraseña incorrectos'; 
-  } 
+  if(validUser){
+    auth.value=true;
+    localStorage.setItem('auth','1');
+  } else {
+    loginError.value = 'Usuario o contraseña incorrectos';
+  }
 };
 
 const logout = () => {
@@ -134,12 +147,129 @@ const createUser = () => {
 </script>
 
 <style scoped>
-.login-card { max-width:400px; margin:4rem auto; padding:2.5rem; }
-@media (max-width: 768px) { .login-card { margin: 2rem auto; padding: 1.5rem; } }
-.form-input { width:100%; padding:0.8rem 1rem; border:1px solid var(--panel-border); border-radius:6px; background:transparent; color:var(--text-main); transition:all 0.2s; font-family:inherit; }
-.form-input:focus { outline:none; border-color:var(--primary); box-shadow:0 0 0 3px rgba(0, 91, 171, 0.15); }
-.dashboard-grid { display:grid; grid-template-columns:300px 1fr; gap:2rem; align-items:start; }
-@media (max-width:768px) { .dashboard-grid { grid-template-columns:1fr; } }
-label { display:block; margin-bottom:0.3rem; font-weight:600; color:var(--text-main); }
-.w-full { width:100%; }
+.admin-container { max-width: 1100px; margin: 0 auto; }
+
+/* Login */
+.login-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 60vh;
+  padding: 1rem;
+}
+.login-card {
+  max-width: 420px;
+  width: 100%;
+  padding: 2.5rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.login-icon { font-size: 3rem; }
+.login-card h2 { font-size: 1.4rem; font-weight: 800; }
+.login-card p { color: var(--text-muted); font-size: 0.9375rem; }
+.form-group { text-align: left; }
+.form-group label { display: block; margin-bottom: 0.375rem; font-weight: 600; font-size: 0.875rem; }
+.form-input {
+  width: 100%;
+  padding: 0.875rem 1rem;
+  border: 2px solid var(--panel-border);
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--text-main);
+  transition: var(--transition);
+  font-family: inherit;
+}
+.form-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-light); }
+.login-error { color: var(--danger); font-weight: 600; font-size: 0.9375rem; }
+
+/* Dashboard */
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+.dashboard-header h2 { font-size: 1.5rem; font-weight: 800; }
+.header-sub { color: var(--text-muted); font-size: 0.9375rem; }
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 1.5rem;
+  align-items: start;
+  margin-bottom: 1.5rem;
+}
+
+.card {
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+}
+.card h3 {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+.proposals-col {}
+.section-title-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+.section-title-row h3 { font-size: 1.1rem; font-weight: 700; }
+.badge-count {
+  background: var(--primary);
+  color: white;
+  padding: 0.125rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.proposals-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+.proposal-item {
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+.proposal-item h4 { color: var(--primary); font-size: 1.05rem; font-weight: 700; }
+.proposal-item p { color: var(--text-muted); font-size: 0.9375rem; line-height: 1.5; }
+.proposal-meta {
+  display: flex;
+  gap: 1rem;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  flex-wrap: wrap;
+}
+.proposal-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+.btn-sm { padding: 0.5rem 1rem; font-size: 0.875rem; }
+
+.empty-card {
+  padding: 2.5rem;
+  text-align: center;
+  color: var(--text-muted);
+}
+.empty-icon { font-size: 2rem; margin-bottom: 0.5rem; }
+
+.msg { margin-top: 0.75rem; font-size: 0.875rem; font-weight: 600; }
+.msg-success { color: var(--secondary); }
+.msg-error { color: var(--danger); }
+
+@media (max-width: 768px) {
+  .dashboard-grid { grid-template-columns: 1fr; }
+  .login-card { padding: 1.5rem; }
+}
 </style>

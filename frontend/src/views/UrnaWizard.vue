@@ -1,140 +1,189 @@
 <template>
   <div class="urna-wizard">
-    <div v-if="networkError" role="alert" aria-live="assertive" class="network-error-banner">
-      {{ $t('wizard.network_error') }}
+    <!-- Error de red -->
+    <Transition name="slide-down">
+      <div v-if="networkError" role="alert" class="alert-banner alert-danger">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        {{ $t('wizard.network_error') }}
+      </div>
+    </Transition>
+
+    <!-- Progress -->
+    <div class="progress-bar" role="progressbar" :aria-valuenow="store.paso" aria-valuemin="1" aria-valuemax="4" aria-label="Progreso de votación">
+      <div class="progress-fill" :style="{ width: ((store.paso / 4) * 100) + '%' }"></div>
     </div>
 
-    <nav aria-label="Pasos del proceso de votación" class="wizard-progress">
-      <ol role="list">
+    <nav class="wizard-progress" aria-label="Pasos del proceso de votación">
+      <ol>
         <li
           v-for="(step, i) in steps"
           :key="i"
-          :aria-current="store.paso === (i + 1) ? 'step' : undefined"
-          :class="{ 'current-step': store.paso === (i + 1), 'completed-step': store.paso > (i + 1) }"
+          :class="{ active: store.paso === (i + 1), completed: store.paso > (i + 1) }"
         >
-          <span aria-hidden="true" class="step-num">{{ i + 1 }}</span>
-          {{ $t(step.labelKey) }}
-          <span class="sr-only">
-            {{ store.paso > i + 1 ? '— Completado' : '' }}
-            {{ store.paso === i + 1 ? '— Paso actual' : '' }}
-          </span>
+          <span class="step-bubble">{{ i + 1 }}</span>
+          <span class="step-label">{{ $t(step.labelKey) }}</span>
         </li>
       </ol>
     </nav>
 
-    <div class="wizard-header">
-      <h2>{{ stepTitle }}</h2>
-    </div>
+    <div class="wizard-card glass-panel">
+      <!-- Paso 1: Identidad -->
+      <div v-if="store.paso === 1" class="step-content">
+        <div class="step-header">
+          <div class="step-icon">🪪</div>
+          <h2>{{ $t('wizard.step1_title') }}</h2>
+          <p class="step-desc">Ingresa tu credencial de elector para verificar que eres ciudadano de Chihuahua.</p>
+        </div>
 
-    <div class="glass-panel wizard-content">
-      <!-- Paso 1: Autenticación -->
-      <div v-if="store.paso === 1" class="step step-1">
         <div class="form-group">
           <label for="ine">{{ $t('wizard.ine_label') }}</label>
-          <input 
-            id="ine" 
-            type="text" 
-            v-model="ine" 
+          <input
+            id="ine"
+            type="text"
+            v-model="ine"
             @input="ine = ine.toUpperCase()"
             maxlength="18"
-            :placeholder="$t('wizard.ine_placeholder')" 
-            class="form-input" 
+            :placeholder="$t('wizard.ine_placeholder')"
+            class="form-input"
             :aria-invalid="!!ineError"
             :aria-describedby="ineError ? 'ine-error' : undefined"
+            @keyup.enter="validarIdentidad"
           />
-          <p v-if="ineError" id="ine-error" role="alert" class="error-msg" style="display: flex; align-items: center; gap: 6px;">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-              <circle cx="12" cy="12" r="10"></circle>
-              <line x1="12" y1="8" x2="12" y2="12"></line>
-              <line x1="12" y1="16" x2="12.01" y2="16"></line>
-            </svg>
+          <p v-if="ineError" id="ine-error" class="error-msg" role="alert">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
             {{ ineError }}
           </p>
         </div>
-        <div class="form-group captcha-container" style="margin-top: 1.5rem; background: var(--panel-bg); padding: 1.5rem; border: 1px solid var(--panel-border); border-radius: 8px;">
-          <label style="margin-bottom: 0.5rem; font-weight: 600;">{{ $t('wizard.captcha_label') }}</label>
-          <p style="margin-bottom: 1rem; color: var(--text-muted); font-size: 0.95rem;">{{ $t('wizard.captcha_desc') }}</p>
-          <div style="display: flex; align-items: center; gap: 1rem;">
-            <div style="font-size: 1.5rem; font-weight: bold; letter-spacing: 2px; user-select: none; background: var(--bg-color); padding: 0.5rem 1rem; border-radius: 6px; border: 1px dashed var(--panel-border);">
-              {{ captchaA }} + {{ captchaB }} =
-            </div>
-            <input type="number" v-model="captchaInput" class="form-input" style="width: 100px; text-align: center; font-size: 1.25rem; padding: 0.75rem;" placeholder="?" />
-            <span v-if="captchaInput && captchaValido" style="color: var(--success); font-weight: bold; font-size: 1.5rem;" aria-label="Correcto">✓</span>
-            <span v-else-if="captchaInput && !captchaValido" style="color: var(--danger); font-weight: bold; font-size: 1.5rem;" aria-label="Incorrecto">✗</span>
+
+        <div class="captcha-box">
+          <label>Verificación de seguridad</label>
+          <p class="captcha-desc">Resuelve la suma para continuar</p>
+          <div class="captcha-row">
+            <div class="captcha-challenge">{{ captchaA }} + {{ captchaB }}</div>
+            <span class="captcha-eq">=</span>
+            <input type="number" v-model="captchaInput" class="form-input captcha-input" placeholder="?" />
+            <span v-if="captchaInput && captchaValido" class="captcha-check">✓</span>
           </div>
         </div>
-        <button class="btn btn-primary w-full" style="margin-top: 1.5rem;" @click="validarIdentidad" :disabled="!captchaValido || ine.length !== 18">
+
+        <button class="btn btn-primary w-full" @click="validarIdentidad" :disabled="!captchaValido || ine.length !== 18">
           {{ $t('wizard.validate_identity') }}
+          <svg v-if="isSubmitting" class="spinner" width="16" height="16" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none" stroke-dasharray="31.4 31.4" transform="rotate(-90 12 12)"><animateTransform attributeName="transform" type="rotate" from="0 12 12" to="360 12 12" dur="1s" repeatCount="indefinite"/></circle></svg>
         </button>
       </div>
 
       <!-- Paso 2: Selección -->
-      <div v-else-if="store.paso === 2" class="step step-2">
-        <div class="opciones-grid" role="radiogroup" aria-label="Opciones de votación">
-          <button 
-            v-for="opcion in opciones" 
+      <div v-else-if="store.paso === 2" class="step-content">
+        <div class="step-header">
+          <div class="step-icon">📋</div>
+          <h2>{{ $t('wizard.step2_title') }}</h2>
+          <p class="step-desc">Selecciona una propuesta ciudadana. Puedes cambiar antes de confirmar.</p>
+        </div>
+
+        <div class="options-list" role="radiogroup" aria-label="Opciones de votación">
+          <button
+            v-for="opcion in opciones"
             :key="opcion.id"
-            class="opcion-card"
+            class="option-card"
             :class="{ active: store.seleccion === opcion.id }"
             role="radio"
             :aria-checked="store.seleccion === opcion.id"
             @click="store.seleccion = opcion.id"
           >
-            <h3>{{ opcion.titulo }}</h3>
-            <p class="desc">{{ opcion.descripcion }}</p>
-            <div class="opcion-detalles">
-              <span class="badge">📍 {{ opcion.municipio }}</span>
-              <span class="badge">💡 {{ opcion.area }}</span>
-              <span class="badge costo">💰 {{ opcion.costo }}</span>
+            <div class="option-check">
+              <div class="option-check-inner" v-if="store.seleccion === opcion.id">✓</div>
+            </div>
+            <div class="option-body">
+              <h3>{{ opcion.titulo }}</h3>
+              <p class="option-desc">{{ opcion.descripcion }}</p>
+              <div class="option-meta">
+                <span class="meta-tag"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg> {{ opcion.municipio }}</span>
+                <span class="meta-tag"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M2 12h20"/></svg> {{ opcion.area }}</span>
+                <span class="meta-tag cost">{{ opcion.costo }}</span>
+              </div>
             </div>
           </button>
         </div>
-        <div class="actions mt-4">
-          <button class="btn btn-outline" @click="store.paso = 1">{{ $t('wizard.back') }}</button>
-          <button class="btn btn-primary" :disabled="!store.seleccion" @click="store.paso = 3">{{ $t('wizard.continue') }}</button>
+
+        <div class="actions-row">
+          <button class="btn btn-outline" @click="store.paso = 1">← {{ $t('wizard.back') }}</button>
+          <button class="btn btn-primary" :disabled="!store.seleccion" @click="store.paso = 3">
+            {{ $t('wizard.continue') }}
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </button>
         </div>
       </div>
 
       <!-- Paso 3: Confirmación -->
-      <div v-else-if="store.paso === 3" class="step step-3">
-        <div class="resumen">
-          <h3>Has seleccionado:</h3>
-          <p class="seleccion-final">{{ opcionSeleccionada?.titulo }}</p>
-          <div class="detalles-resumen" v-if="opcionSeleccionada">
-            <p><strong>Municipio:</strong> {{ opcionSeleccionada.municipio }}</p>
-            <p><strong>Área de Impacto:</strong> {{ opcionSeleccionada.area }}</p>
-            <p><strong>Costo Estimado:</strong> {{ opcionSeleccionada.costo }}</p>
-          </div>
-          <p class="warning">{{ $t('wizard.review_warning') }}</p>
+      <div v-else-if="store.paso === 3" class="step-content">
+        <div class="step-header">
+          <div class="step-icon">⚠️</div>
+          <h2>{{ $t('wizard.step3_title') }}</h2>
+          <p class="step-desc">Revisa tu selección. Una vez emitido, no podrás cambiar tu voto.</p>
         </div>
-        <div class="actions mt-4" style="justify-content: space-between;">
-          <button class="btn btn-outline" @click="store.paso = 2">{{ $t('wizard.change_vote') }}</button>
-          <button 
-            class="btn btn-primary" 
-            @click="emitirVoto" 
-            :disabled="isSubmitting || !isOnline" 
-            :aria-label="$t('wizard.confirm_emit_aria')"
-          >
+
+        <div class="confirm-box" v-if="opcionSeleccionada">
+          <div class="confirm-option">
+            <span class="confirm-label">Has seleccionado</span>
+            <h3 class="confirm-title">{{ opcionSeleccionada.titulo }}</h3>
+            <p class="confirm-desc">{{ opcionSeleccionada.descripcion }}</p>
+            <div class="confirm-meta">
+              <span>{{ opcionSeleccionada.municipio }}</span>
+              <span>·</span>
+              <span>{{ opcionSeleccionada.area }}</span>
+              <span>·</span>
+              <span class="cost">{{ opcionSeleccionada.costo }}</span>
+            </div>
+          </div>
+          <div class="confirm-warning">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            {{ $t('wizard.review_warning') }}
+          </div>
+        </div>
+
+        <div class="actions-row">
+          <button class="btn btn-outline" @click="store.paso = 2">← {{ $t('wizard.change_vote') }}</button>
+          <button class="btn btn-primary" @click="emitirVoto" :disabled="isSubmitting || !isOnline" :aria-label="$t('wizard.confirm_emit_aria')">
             {{ isSubmitting ? $t('wizard.emitting') : $t('wizard.confirm_and_emit') }}
+            <svg v-if="isSubmitting" class="spinner" width="16" height="16" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none" stroke-dasharray="31.4 31.4" transform="rotate(-90 12 12)"><animateTransform attributeName="transform" type="rotate" from="0 12 12" to="360 12 12" dur="1s" repeatCount="indefinite"/></circle></svg>
           </button>
         </div>
-        <p v-if="!isOnline" class="sr-only" aria-live="polite">
+        <p v-if="!isOnline" class="offline-msg" role="alert">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
           Necesitas conexión a internet para emitir tu voto
         </p>
       </div>
 
       <!-- Paso 4: Recibo -->
-      <div v-else-if="store.paso === 4" class="step step-4 text-center">
-        <div class="success-icon">✓</div>
-        <h2>{{ $t('wizard.success_title') }}</h2>
-        <p>{{ $t('wizard.success_desc') }}</p>
-        <div class="recibo-box">
-          <p>{{ $t('wizard.receipt_hash') }}</p>
-          <code>{{ recibo }}</code>
+      <div v-else-if="store.paso === 4" class="step-content">
+        <div class="receipt-success">
+          <div class="success-ring">
+            <div class="success-icon">✓</div>
+          </div>
+          <h2>{{ $t('wizard.success_title') }}</h2>
+          <p class="receipt-desc">{{ $t('wizard.success_desc') }}</p>
         </div>
-        <div class="actions center-actions mt-4" style="justify-content: center; gap: 1rem;">
-          <button class="btn btn-outline" @click="descargarComprobante">{{ $t('wizard.download_receipt') }}</button>
-          <button class="btn btn-primary" @click="finalizar">{{ $t('wizard.finish') }}</button>
+
+        <div class="receipt-card">
+          <label>{{ $t('wizard.receipt_hash') }}</label>
+          <div class="receipt-hash">
+            <code>{{ recibo }}</code>
+            <button class="copy-btn" @click="copiarRecibo" title="Copiar hash">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            </button>
+          </div>
+          <p class="receipt-hint">Guarda este código. Puedes verificar tu voto en cualquier momento.</p>
+        </div>
+
+        <div class="actions-row center">
+          <button class="btn btn-outline" @click="descargarComprobante">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            {{ $t('wizard.download_receipt') }}
+          </button>
+          <button class="btn btn-primary" @click="finalizar">
+            {{ $t('wizard.finish') }}
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+          </button>
         </div>
       </div>
     </div>
@@ -143,10 +192,8 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue';
-import { useI18n } from 'vue-i18n'
 import { useUrnaStore } from '../stores/useUrnaStore';
 
-const { t } = useI18n()
 const store = useUrnaStore();
 const ine = ref('');
 const ineError = ref('');
@@ -168,29 +215,16 @@ const steps = [
 
 const opciones = computed(() => store.props.filter((p:any) => p.status === 'approved'));
 
-const stepTitle = computed(() => {
-  switch (store.paso) {
-    case 1: return t('wizard.step1_title');
-    case 2: return t('wizard.step2_title');
-    case 3: return t('wizard.step3_title');
-    case 4: return t('wizard.step4_title');
-    default: return '';
-  }
-});
-
-const opcionSeleccionada = computed(() => 
+const opcionSeleccionada = computed(() =>
   opciones.value.find((o:any) => o.id === store.seleccion)
 );
 
 const validarIdentidad = () => {
   ineError.value = '';
-  const ineUpper = ine.value.toUpperCase();
-
-  if (ineUpper.length !== 18) {
+  if (ine.value.length !== 18) {
     ineError.value = 'La Clave de Elector debe tener 18 caracteres.';
     return;
   }
-
   store.tokenSesion = 'sesion_' + Math.random().toString(36).substring(7);
   store.expiresAt = Date.now() + 15 * 60 * 1000;
   store.resetTimer();
@@ -198,38 +232,29 @@ const validarIdentidad = () => {
 };
 
 const emitirVoto = async () => {
-  if(isSubmitting.value) return;
+  if (isSubmitting.value) return;
   isSubmitting.value = true;
   networkError.value = false;
-  
   try {
     const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
-    const processId = 'proceso_2025';
-    const identityHash = 'id_' + Math.random().toString(36).substring(2);
-    const voteIndex = opciones.value.findIndex((o:any) => o.id === store.seleccion);
-    const numOptions = opciones.value.length;
-
-    // Intentar endpoint ZK primero
     const abort = new AbortController();
     const id = setTimeout(() => abort.abort(), 8000);
     const res = await fetch(`${apiUrl}/api/v1/vote/commit`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        process_id: processId,
-        vote_index: voteIndex,
-        num_options: numOptions,
-        identity_hash: identityHash
+        process_id: 'proceso_2025',
+        vote_index: opciones.value.findIndex((o:any) => o.id === store.seleccion),
+        num_options: opciones.value.length,
+        identity_hash: 'id_' + Math.random().toString(36).substring(2)
       }),
       signal: abort.signal
     });
     clearTimeout(id);
-
     if (res.ok) {
       const data = await res.json();
       recibo.value = data.block_hash || data.nullifier || data.receipt_token;
     } else {
-      // Fallback al endpoint original
       const res2 = await fetch(`${apiUrl}/urna/emitir`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -252,7 +277,7 @@ const finalizar = () => {
 };
 
 const descargarComprobante = () => {
-  const content = `COMPROBANTE DE VOTO - URNA DIGITAL\nHash: ${recibo.value}\nFecha: ${new Date().toISOString()}\nVerifique su voto en /verificar`;
+  const content = `COMPROBANTE DE VOTO - URNA DIGITAL CHIHUAHUA\nHash: ${recibo.value}\nFecha: ${new Date().toLocaleString()}\nVerifica en: urna-digital.vercel.app/verificar`;
   const blob = new Blob([content], { type: 'text/plain' });
   const url = window.URL.createObjectURL(blob);
   const a = document.createElement('a');
@@ -262,25 +287,19 @@ const descargarComprobante = () => {
   window.URL.revokeObjectURL(url);
 };
 
-const resetInteractionTimer = () => {
-  store.resetTimer();
+const copiarRecibo = () => {
+  navigator.clipboard.writeText(recibo.value);
 };
 
 const onOffline = () => { networkError.value = true; isOnline.value = false; };
 const onOnline = () => { networkError.value = false; isOnline.value = true; };
 
 onMounted(() => {
-  window.addEventListener('mousemove', resetInteractionTimer);
-  window.addEventListener('keydown', resetInteractionTimer);
-  window.addEventListener('touchstart', resetInteractionTimer);
   window.addEventListener('offline', onOffline);
   window.addEventListener('online', onOnline);
 });
 
 onUnmounted(() => {
-  window.removeEventListener('mousemove', resetInteractionTimer);
-  window.removeEventListener('keydown', resetInteractionTimer);
-  window.removeEventListener('touchstart', resetInteractionTimer);
   window.removeEventListener('offline', onOffline);
   window.removeEventListener('online', onOnline);
 });
@@ -288,295 +307,473 @@ onUnmounted(() => {
 
 <style scoped>
 .urna-wizard {
-  max-width: 800px;
+  max-width: 720px;
   margin: 0 auto;
-  padding-top: 1rem;
+  padding: 0.5rem 0 2rem;
 }
-.network-error-banner {
-  background-color: var(--danger);
-  color: white;
-  padding: 1rem;
-  border-radius: 8px;
-  text-align: center;
-  font-weight: bold;
+
+/* Alert banners */
+.alert-banner {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.875rem 1rem;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  font-size: 0.9375rem;
   margin-bottom: 1rem;
 }
-.wizard-progress {
-  margin-bottom: 2rem;
+.alert-danger {
+  background: var(--danger-light);
+  color: var(--danger);
 }
+
+/* Progress bar */
+.progress-bar {
+  height: 6px;
+  background: var(--panel-border);
+  border-radius: 999px;
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+}
+.progress-fill {
+  height: 100%;
+  background: var(--primary);
+  border-radius: 999px;
+  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Wizard progress */
 .wizard-progress ol {
   display: flex;
   justify-content: space-between;
   list-style: none;
   padding: 0;
-  margin: 0;
+  margin-bottom: 2rem;
+  gap: 0.5rem;
 }
 .wizard-progress li {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.375rem;
+  flex: 1;
+  text-align: center;
+}
+.step-bubble {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--panel-border);
   color: var(--text-muted);
-  font-size: 0.9rem;
-  font-weight: 500;
-}
-.wizard-progress li.current-step {
-  color: var(--primary);
-  font-weight: 700;
-}
-.wizard-progress li.completed-step {
-  color: var(--success);
-}
-.step-num {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  background: var(--panel-border);
-  color: var(--text-main);
-  font-size: 0.8rem;
+  font-weight: 700;
+  font-size: 0.875rem;
+  transition: var(--transition);
 }
-.current-step .step-num {
+.wizard-progress li.active .step-bubble {
   background: var(--primary);
   color: white;
+  box-shadow: 0 0 0 4px var(--primary-light);
 }
-.completed-step .step-num {
-  background: var(--success);
+.wizard-progress li.completed .step-bubble {
+  background: var(--secondary);
   color: white;
 }
-.wizard-header {
-  margin-bottom: 2rem;
+.step-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+.wizard-progress li.active .step-label {
+  color: var(--primary);
+}
+
+/* Wizard card */
+.wizard-card {
+  padding: 2.5rem;
+}
+
+/* Step header */
+.step-header {
   text-align: center;
+  margin-bottom: 2rem;
 }
-.wizard-header h2 {
-  font-size: 2rem;
+.step-icon {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
 }
-.wizard-content {
-  padding: 3rem;
+.step-header h2 {
+  font-size: 1.5rem;
+  font-weight: 800;
+  margin-bottom: 0.5rem;
 }
-.form-group {
-  margin-bottom: 1.5rem;
-  text-align: left;
+.step-desc {
+  color: var(--text-muted);
+  max-width: 480px;
+  margin: 0 auto;
 }
-label {
+
+/* Form inputs */
+.form-group { margin-bottom: 1.5rem; }
+.form-group label {
   display: block;
   margin-bottom: 0.5rem;
   font-weight: 600;
-  color: var(--text-main);
+  font-size: 0.9375rem;
 }
 .form-input {
   width: 100%;
-  padding: 1.25rem;
+  padding: 1rem 1.25rem;
   background: transparent;
-  border: 1px solid var(--panel-border);
-  border-radius: 8px;
+  border: 2px solid var(--panel-border);
+  border-radius: var(--radius-md);
   color: var(--text-main);
   font-size: 1.1rem;
-  transition: all 0.3s;
-}
-.form-input.has-error, .form-input[aria-invalid="true"] {
-  border-color: var(--danger);
-  background: rgba(239, 68, 68, 0.05);
-}
-.error-msg {
-  color: #fca5a5;
-  background: rgba(239, 68, 68, 0.1);
-  padding: 0.75rem 1rem;
-  border-left: 4px solid var(--danger);
-  border-radius: 4px;
-  margin-top: 0.75rem;
-  font-size: 0.95rem;
-  font-weight: 500;
+  transition: var(--transition);
+  font-family: inherit;
 }
 .form-input:focus {
   outline: none;
   border-color: var(--primary);
-  box-shadow: 0 0 0 4px rgba(0, 91, 171, 0.2);
-  background: transparent;
+  box-shadow: 0 0 0 4px var(--primary-light);
 }
-.w-full {
-  width: 100%;
+.form-input[aria-invalid="true"] {
+  border-color: var(--danger);
 }
-.opciones-grid {
+.error-msg {
   display: flex;
-  flex-direction: column;
-  gap: 1.25rem;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--danger);
+  background: var(--danger-light);
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-sm);
+  margin-top: 0.5rem;
+  font-weight: 500;
+  font-size: 0.9375rem;
 }
-.opcion-card {
-  text-align: left;
-  background: var(--panel-bg);
-  border: 1px solid var(--panel-border);
-  padding: 1.5rem 2rem;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.3s;
-  color: var(--text-main);
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-  position: relative;
-}
-.opcion-card:hover {
+
+/* Captcha */
+.captcha-box {
   background: var(--bg-color);
-  border-color: var(--primary);
-  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+  border: 2px solid var(--panel-border);
+  border-radius: var(--radius-md);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
 }
-.opcion-card.active {
-  border-color: var(--primary);
-  background: rgba(0, 91, 171, 0.05);
+.captcha-box label {
+  font-weight: 700;
+  display: block;
+  margin-bottom: 0.25rem;
 }
-.opcion-card.active::before {
-  content: '✓';
-  position: absolute;
-  right: 1.5rem;
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--primary);
-  font-size: 1.5rem;
-  font-weight: bold;
-}
-.opcion-card h3 {
-  margin-bottom: 0.5rem;
-  font-size: 1.2rem;
-}
-.desc {
+.captcha-desc {
   color: var(--text-muted);
-  font-size: 1rem;
-  line-height: 1.5;
+  font-size: 0.875rem;
   margin-bottom: 1rem;
 }
-.opcion-detalles {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-top: 1rem;
-}
-.badge {
-  background: var(--panel-border);
-  padding: 0.25rem 0.75rem;
-  border-radius: 9999px;
-  font-size: 0.85rem;
-  color: var(--text-main);
-}
-.badge.costo {
-  background: #D1FAE5;
-  color: #065F46;
-  font-weight: 600;
-}
-.actions {
-  display: flex;
-  gap: 1.5rem;
-}
-.mt-4 {
-  margin-top: 2.5rem;
-}
-.resumen {
-  text-align: center;
-  padding: 3rem;
-  background: var(--panel-bg);
-  border-radius: 12px;
-  border: 1px solid var(--panel-border);
-}
-.seleccion-final {
-  font-size: 2rem;
-  font-weight: 700;
-  color: var(--primary);
-  margin: 1.5rem 0 0.5rem;
-  text-shadow: none;
-}
-.detalles-resumen {
-  background: transparent;
-  padding: 1.5rem;
-  border-radius: 8px;
-  margin: 1.5rem auto;
-  text-align: left;
-  display: inline-block;
-  border: 1px solid var(--panel-border);
-}
-.detalles-resumen p {
-  margin-bottom: 0.75rem;
-  font-size: 1.1rem;
-  color: var(--text-main);
-}
-.detalles-resumen strong {
-  color: var(--text-muted);
-  margin-right: 0.5rem;
-}
-.warning {
-  color: var(--danger);
-  font-size: 1rem;
-  font-weight: 500;
-  max-width: 80%;
-  margin: 1.5rem auto 0;
-}
-.text-center {
-  text-align: center;
-}
-.success-icon {
-  width: 80px;
-  height: 80px;
-  background: var(--success);
-  color: white;
-  font-size: 3rem;
+.captcha-row {
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 50%;
-  margin: 0 auto 2rem;
-  box-shadow: 0 0 30px rgba(16, 185, 129, 0.4);
+  gap: 0.75rem;
 }
-.recibo-box {
-  background: transparent;
-  padding: 2rem;
-  border-radius: 8px;
-  margin: 2.5rem 0;
-  border: 1px solid var(--success);
+.captcha-challenge {
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: 2px;
+  background: var(--panel-bg);
+  padding: 0.75rem 1.25rem;
+  border-radius: var(--radius-sm);
+  border: 2px dashed var(--panel-border);
+  user-select: none;
 }
-code {
-  display: block;
-  font-family: monospace;
+.captcha-input {
+  width: 90px !important;
+  text-align: center;
   font-size: 1.25rem;
-  color: var(--success);
-  margin-top: 1rem;
+  padding: 0.75rem;
+}
+.captcha-check {
+  color: var(--secondary);
+  font-weight: 800;
+  font-size: 1.5rem;
+}
+
+/* Options */
+.options-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+  margin-bottom: 2rem;
+}
+.option-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  text-align: left;
+  background: var(--panel-bg);
+  border: 2px solid var(--panel-border);
+  padding: 1.25rem 1.5rem;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: var(--transition);
+  color: var(--text-main);
+}
+.option-card:hover {
+  border-color: var(--primary);
+  box-shadow: var(--panel-shadow-lg);
+}
+.option-card.active {
+  border-color: var(--primary);
+  background: var(--primary-light);
+}
+.option-check {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid var(--panel-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+  transition: var(--transition);
+}
+.option-card.active .option-check {
+  border-color: var(--primary);
+  background: var(--primary);
+}
+.option-check-inner {
+  color: white;
+  font-weight: 800;
+  font-size: 0.75rem;
+}
+.option-body { flex: 1; }
+.option-body h3 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+}
+.option-desc {
+  color: var(--text-muted);
+  font-size: 0.9375rem;
+  margin-bottom: 0.75rem;
+  line-height: 1.5;
+}
+.option-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.meta-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  background: var(--bg-color);
+  padding: 0.375rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+.meta-tag.cost {
+  background: var(--secondary-light);
+  color: #065F46;
+  font-weight: 700;
+}
+
+/* Confirm box */
+.confirm-box {
+  margin-bottom: 2rem;
+}
+.confirm-option {
+  background: var(--bg-color);
+  border: 2px solid var(--panel-border);
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+.confirm-label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.5rem;
+}
+.confirm-title {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--primary);
+  margin-bottom: 0.5rem;
+}
+.confirm-desc {
+  color: var(--text-muted);
+  margin-bottom: 1rem;
+}
+.confirm-meta {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  font-size: 0.9375rem;
+  color: var(--text-muted);
+}
+.confirm-meta .cost {
+  color: var(--secondary);
+  font-weight: 700;
+}
+.confirm-warning {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--danger);
+  background: var(--danger-light);
+  padding: 1rem 1.25rem;
+  border-radius: var(--radius-md);
+  font-weight: 500;
+  font-size: 0.9375rem;
+}
+
+/* Receipt */
+.receipt-success {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+.success-ring {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  background: var(--secondary-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.5rem;
+}
+.success-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--secondary);
+  color: white;
+  font-size: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.receipt-success h2 {
+  font-size: 1.5rem;
+  font-weight: 800;
+  margin-bottom: 0.5rem;
+}
+.receipt-desc {
+  color: var(--text-muted);
+}
+.receipt-card {
+  background: var(--bg-color);
+  border: 2px solid var(--secondary);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+.receipt-card label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-bottom: 0.5rem;
+}
+.receipt-hash {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--panel-bg);
+  border-radius: var(--radius-md);
+  padding: 1rem;
+  margin-bottom: 0.5rem;
+}
+.receipt-hash code {
+  flex: 1;
+  font-family: 'SF Mono', monospace;
+  font-size: 0.95rem;
+  color: var(--secondary);
   word-break: break-all;
-  letter-spacing: 1px;
+  text-align: left;
 }
-.sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border-width: 0;
+.copy-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: var(--radius-sm);
+  transition: var(--transition);
+}
+.copy-btn:hover {
+  background: var(--primary-light);
+  color: var(--primary);
+}
+.receipt-hint {
+  font-size: 0.85rem;
+  color: var(--text-muted);
 }
 
+/* Actions */
+.actions-row {
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+}
+.actions-row.center {
+  justify-content: center;
+}
+.offline-msg {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  color: var(--warning);
+  background: var(--warning-light);
+  padding: 0.75rem;
+  border-radius: var(--radius-sm);
+  margin-top: 1rem;
+  font-size: 0.9375rem;
+  font-weight: 500;
+}
+
+/* Spinner */
+.spinner {
+  animation: spin 1s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Responsive */
 @media (max-width: 768px) {
-  .urna-wizard { padding-top: 0.5rem; }
-  .wizard-progress ol { flex-wrap: wrap; gap: 0.5rem; }
-  .wizard-progress li { font-size: 0.8rem; }
-  .wizard-header h2 { font-size: 1.5rem; }
-  .wizard-content { padding: 1.5rem; }
-  .opciones-grid { gap: 0.75rem; }
-  .opcion-card { padding: 1rem 1.25rem; }
-  .opcion-card.active::before { right: 1rem; font-size: 1.2rem; }
-  .actions { flex-direction: column; gap: 0.75rem; }
-  .actions .btn { width: 100%; }
-  .resumen { padding: 1.5rem; }
-  .seleccion-final { font-size: 1.5rem; }
-  .detalles-resumen { padding: 1rem; width: 100%; }
-  .warning { max-width: 100%; font-size: 0.9rem; }
-  .recibo-box { padding: 1rem; margin: 1.5rem 0; }
-  code { font-size: 1rem; }
-  .form-input { padding: 1rem; font-size: 1rem; }
-  .captcha-container .form-input { width: 80px !important; }
+  .wizard-card { padding: 1.5rem; }
+  .wizard-progress ol { gap: 0.25rem; }
+  .step-label { display: none; }
+  .actions-row { flex-direction: column; }
+  .actions-row .btn { width: 100%; justify-content: center; }
+  .confirm-option { padding: 1.25rem; }
 }
 
-@media (max-width: 480px) {
-  .wizard-progress li { font-size: 0.75rem; }
-  .step-num { width: 20px; height: 20px; font-size: 0.7rem; }
-  .wizard-content { padding: 1rem; }
-  .wizard-header h2 { font-size: 1.25rem; }
+.slide-down-enter-active, .slide-down-leave-active {
+  transition: all 0.3s ease;
+  max-height: 60px;
+}
+.slide-down-enter-from, .slide-down-leave-to {
+  max-height: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  opacity: 0;
+  overflow: hidden;
 }
 </style>

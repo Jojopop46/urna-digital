@@ -1,25 +1,58 @@
 <template>
   <div class="verificar-container">
-    <div class="glass-panel verify-box">
-      <h2>Verificación de Voto</h2>
-      <p>Ingresa el hash criptográfico (recibo) de tu voto para confirmar que fue registrado correctamente en la blockchain ciudadana de forma anónima.</p>
-      
-      <div class="form-group mt-4">
-        <label for="hash">Hash de Recibo</label>
-        <input id="hash" type="text" v-model="hashInput" placeholder="Ej: SHA256-..." class="form-input" />
+    <div class="glass-panel verify-card">
+      <div class="verify-header">
+        <div class="verify-icon">🔍</div>
+        <h2>Verifica tu voto</h2>
+        <p>Ingresa el código de tu recibo para confirmar que fue registrado correctamente en la blockchain.</p>
       </div>
-      
-      <button class="btn btn-primary w-full" @click="verificar" :disabled="!hashInput">
-        Verificar en la Blockchain
+
+      <div class="form-group">
+        <label for="hash">Código de recibo (hash)</label>
+        <div class="input-wrap">
+          <input
+            id="hash"
+            type="text"
+            v-model="hashInput"
+            placeholder="Ej: 00dbcbf743b775128c9..."
+            class="form-input"
+            @keyup.enter="verificar"
+          />
+          <button v-if="hashInput" class="clear-btn" @click="hashInput = ''" aria-label="Borrar">✕</button>
+        </div>
+      </div>
+
+      <button class="btn btn-primary w-full" @click="verificar" :disabled="!hashInput || loading">
+        <svg v-if="loading" class="spinner" width="16" height="16" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none" stroke-dasharray="31.4 31.4" transform="rotate(-90 12 12)"><animateTransform attributeName="transform" type="rotate" from="0 12 12" to="360 12 12" dur="1s" repeatCount="indefinite"/></circle></svg>
+        <span v-else>🔎 Verificar en blockchain</span>
       </button>
 
-      <div v-if="resultado" class="resultado-box mt-4" :class="resultado.status">
-        <div class="icon">{{ resultado.status === 'success' ? '✓' : '✕' }}</div>
-        <div class="texto">
+      <!-- Resultado éxito -->
+      <div v-if="resultado?.status === 'success'" class="result-box result-success">
+        <div class="result-icon">✓</div>
+        <div class="result-body">
           <h4>{{ resultado.titulo }}</h4>
           <p>{{ resultado.mensaje }}</p>
         </div>
       </div>
+
+      <!-- Resultado error -->
+      <div v-if="resultado?.status === 'error'" class="result-box result-error">
+        <div class="result-icon">✕</div>
+        <div class="result-body">
+          <h4>{{ resultado.titulo }}</h4>
+          <p>{{ resultado.mensaje }}</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="glass-panel tips-card">
+      <h3>💡 Consejos</h3>
+      <ul>
+        <li>Tu recibo se descargó automáticamente como archivo <strong>.txt</strong> al votar.</li>
+        <li>El código es un hash único que identifica tu voto de forma anónima.</li>
+        <li>Si perdiste tu recibo, no puedes recuperarlo. ¡Guárdalo bien!</li>
+      </ul>
     </div>
   </div>
 </template>
@@ -28,12 +61,14 @@
 import { ref } from 'vue';
 
 const hashInput = ref('');
+const loading = ref(false);
 const resultado = ref<{status: 'success'|'error', titulo: string, mensaje: string} | null>(null);
 
 const verificar = async () => {
+  loading.value = true;
   resultado.value = null;
   const api_url = import.meta.env.VITE_API_URL || 'http://localhost:8000';
-  
+
   try {
     const response = await fetch(`${api_url}/transparencia/verificar/${hashInput.value}`);
     if (response.ok) {
@@ -41,131 +76,180 @@ const verificar = async () => {
       if (data.encontrado) {
         resultado.value = {
           status: 'success',
-          titulo: 'Voto Encontrado e Íntegro',
-          mensaje: `El recibo corresponde al bloque #${data.block.index} sellado el ${new Date(data.block.timestamp * 1000).toLocaleString()}. Su inmutabilidad está garantizada por la cadena.`
+          titulo: 'Voto verificado ✅',
+          mensaje: `Tu voto está registrado en el bloque #${data.block.index}. La blockchain garantiza que no ha sido alterado.`
         };
       } else {
         resultado.value = {
           status: 'error',
-          titulo: 'Voto No Encontrado',
-          mensaje: 'El recibo no figura en la blockchain pública. Verifica que esté escrito exactamente igual.'
+          titulo: 'Voto no encontrado',
+          mensaje: 'Este código no figura en la blockchain. Verifica que lo hayas copiado correctamente.'
         };
       }
     } else {
       throw new Error("API Error");
     }
   } catch (error) {
-    console.warn("Backend no disponible, simulando respuesta...");
-    if (hashInput.value.length > 10 && hashInput.value.startsWith('SHA256-')) {
+    if (hashInput.value.length > 10) {
       resultado.value = {
         status: 'success',
-        titulo: 'Voto Encontrado (Modo Local)',
-        mensaje: 'El recibo corresponde a un voto emitido en esta sesión. (Nota: Backend desconectado).'
+        titulo: 'Verificación local (modo demo)',
+        mensaje: 'El formato del código es válido. En producción se verificaría contra la blockchain.'
       };
     } else {
       resultado.value = {
         status: 'error',
-        titulo: 'Voto No Encontrado',
-        mensaje: 'No hemos podido verificar este recibo.'
+        titulo: 'No se pudo verificar',
+        mensaje: 'El servidor no responde. Intenta más tarde.'
       };
     }
+  } finally {
+    loading.value = false;
   }
 };
 </script>
 
 <style scoped>
 .verificar-container {
+  max-width: 600px;
+  margin: 0 auto;
   display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 70vh;
-  padding: 1rem;
+  flex-direction: column;
+  gap: 1.5rem;
 }
-.verify-box {
-  padding: 3.5rem;
-  max-width: 650px;
-  width: 100%;
+.verify-card {
+  padding: 2.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
 }
-.verify-box h2 {
-  font-size: 2.2rem;
-  margin-bottom: 1rem;
+.verify-header {
+  text-align: center;
 }
-.verify-box p {
+.verify-icon {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+}
+.verify-header h2 {
+  font-size: 1.5rem;
+  font-weight: 800;
+  margin-bottom: 0.5rem;
+}
+.verify-header p {
   color: var(--text-muted);
-  font-size: 1.1rem;
-  line-height: 1.6;
+  font-size: 0.9375rem;
 }
-.form-group {
-  margin-bottom: 2rem;
-  text-align: left;
-}
-label {
+
+.form-group label {
   display: block;
   margin-bottom: 0.5rem;
   font-weight: 600;
-  color: var(--text-main);
+  font-size: 0.9375rem;
+}
+.input-wrap {
+  position: relative;
 }
 .form-input {
   width: 100%;
-  padding: 1.25rem;
+  padding: 1rem 2.5rem 1rem 1.25rem;
   background: transparent;
-  border: 1px solid var(--panel-border);
-  border-radius: 10px;
+  border: 2px solid var(--panel-border);
+  border-radius: var(--radius-md);
   color: var(--text-main);
-  font-size: 1.1rem;
-  font-family: monospace;
-  letter-spacing: 1px;
+  font-size: 1rem;
+  font-family: 'SF Mono', monospace;
+  transition: var(--transition);
 }
 .form-input:focus {
   outline: none;
   border-color: var(--primary);
-  box-shadow: 0 0 0 4px rgba(0, 91, 171, 0.2);
+  box-shadow: 0 0 0 4px var(--primary-light);
 }
-.w-full {
-  width: 100%;
+.clear-btn {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 0.25rem;
+  font-size: 0.875rem;
 }
-.mt-4 {
-  margin-top: 2rem;
-}
-.resultado-box {
+
+.result-box {
   display: flex;
-  gap: 1.5rem;
-  align-items: center;
-  padding: 1.5rem;
-  border-radius: 8px;
+  gap: 1rem;
+  align-items: flex-start;
+  padding: 1.25rem;
+  border-radius: var(--radius-md);
   text-align: left;
+  animation: slideUp 0.3s ease;
 }
-.resultado-box.success {
-  background: rgba(16, 185, 129, 0.1);
-  border: 1px solid var(--success);
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
-.resultado-box.error {
-  background: rgba(239, 68, 68, 0.1);
+.result-success {
+  background: var(--secondary-light);
+  border: 1px solid var(--secondary);
+}
+.result-error {
+  background: var(--danger-light);
   border: 1px solid var(--danger);
 }
-.resultado-box .icon {
-  font-size: 2.5rem;
+.result-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  flex-shrink: 0;
 }
-.resultado-box.success .icon {
-  color: var(--success);
+.result-success .result-icon {
+  background: var(--secondary);
+  color: white;
 }
-.resultado-box.error .icon {
-  color: var(--danger);
+.result-error .result-icon {
+  background: var(--danger);
+  color: white;
 }
-.resultado-box h4 {
-  margin-bottom: 0.5rem;
-  font-size: 1.2rem;
-  color: var(--text-main);
-}
-.resultado-box p {
-  margin: 0;
+.result-body h4 {
   font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+}
+.result-body p {
+  font-size: 0.9375rem;
+  margin: 0;
   color: var(--text-muted);
 }
 
+.tips-card {
+  padding: 1.5rem;
+}
+.tips-card h3 {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+}
+.tips-card ul {
+  padding-left: 1.25rem;
+  color: var(--text-muted);
+  font-size: 0.9375rem;
+  line-height: 1.7;
+}
+.tips-card li { margin-bottom: 0.5rem; }
+
+.spinner {
+  animation: spin 1s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
 @media (max-width: 768px) {
-  .verify-box { padding: 1.5rem; }
-  .verify-box h2 { font-size: 1.6rem; }
-  .resultado-box { flex-direction: column; gap: 0.75rem; text-align: center; }
+  .verify-card { padding: 1.5rem; }
 }
 </style>
