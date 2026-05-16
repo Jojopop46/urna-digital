@@ -1,0 +1,60 @@
+{
+  "nav": {
+    "home": "Inicio",
+    "transparency": "Transparencia",
+    "verify": "Verificar",
+    "vote": "Votar",
+    "admin": "Admin",
+    "proposals": "Proponer"
+  },
+  "home": {
+    "title": "Plataforma de Participación Ciudadana",
+    "subtitle": "Vota de forma segura y transparente desde cualquier lugar de Chihuahua.",
+    "vote": "Votar",
+    "results": "Resultados",
+    "propose": "Proponer"
+  },
+  "wizard": {
+    "step1_label": "Identidad",
+    "step2_label": "Intención",
+    "step3_label": "Voto",
+    "step4_label": "Recibo",
+    "step1_title": "Escribe tu número de credencial",
+    "step2_title": "Elige una propuesta",
+    "step3_title": "¿Es tu voto?",
+    "step4_title": "Comprobante de voto",
+    "step1_title": "Escribe tu número de credencial",
+    "step2_title": "Elige una propuesta",
+    "step3_title": "¿Es tu voto?",
+    "step4_title": "Comprobante de voto",
+    "ine_label": "Tu CURP o número de la credencial de elector",
+    "ine_placeholder": "18 letras y números",
+    "ine_error_length": "Debe tener 18 caracteres.",
+    "captcha_label": "Verificación de seguridad",
+    "captcha_desc": "Resuelve la suma para comprobar que eres humano:",
+    "validate_identity": "Siguiente",
+    "continue": "Siguiente",
+    "back": "Atrás",
+    "change_vote": "Cambiar",
+    "confirm_and_emit": "Sí, este es mi voto",
+    "confirm_emit_aria": "Confirmar y enviar voto",
+    "emitting": "Enviando...",
+    "review_warning": "Revisa bien. No podrás cambiar tu voto.",
+    "success_title": "¡Votaste!",
+    "success_desc": "Tu voto quedó guardado de forma segura y anónima.",
+    "receipt_hash": "Número de comprobante:",
+    "download_receipt": "Guarda tu comprobante",
+    "finish": "Salir",
+    "offline_banner": "Sin internet — Tu elección está guardada. Conéctate para votar.",
+    "network_error": "No se pudo enviar el voto por falta de internet. Inténtalo de nuevo."
+  },
+  "transparency": {
+    "live_chart": "Gráfica de resultados en tiempo real"
+  },
+  "language": {
+    "select": "Cambiar idioma",
+    "es": "Español",
+    "es_easy": "Fácil",
+    "rar": "Rarámuri"
+  }
+}

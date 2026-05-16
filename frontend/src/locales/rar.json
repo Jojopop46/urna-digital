@@ -1,0 +1,60 @@
+{
+  "nav": {
+    "home": "Inicio",
+    "transparency": "Transparencia",
+    "verify": "Verificar",
+    "vote": "Votar",
+    "admin": "Admin",
+    "proposals": "Proponer"
+  },
+  "home": {
+    "title": "Plataforma de Participación Ciudadana",
+    "subtitle": "Repá simí napawí séwachi chihuahua.",
+    "vote": "Repá simí",
+    "results": "Napawí",
+    "propose": "Mapí"
+  },
+  "wizard": {
+    "step1_label": "Anéguame",
+    "step2_label": "Napawí",
+    "step3_label": "Repá",
+    "step4_label": "Repásimí",
+    "step1_title": "Anéguame nasí repá sihurúame",
+    "step2_title": "Napawí séwachi",
+    "step3_title": "¿Né repá nakí?",
+    "step4_title": "Repá simí",
+    "step1_title": "Anéguame nasí repá sihurúame",
+    "step2_title": "Napawí séwachi",
+    "step3_title": "¿Né repá nakí?",
+    "step4_title": "Repá simí",
+    "ine_label": "CURP ó INE repási",
+    "ine_placeholder": "18 anéguame",
+    "ine_error_length": "18 anéguame nijá.",
+    "captcha_label": "Anéguame simí",
+    "captcha_desc": "Anéguame simí jiká:",
+    "validate_identity": "Mapu",
+    "continue": "Mapu",
+    "back": "Riká",
+    "change_vote": "Riká repá",
+    "confirm_and_emit": "Eé, né repá",
+    "confirm_emit_aria": "Repá simí",
+    "emitting": "Simí...",
+    "review_warning": "Jiká repá kití simí.",
+    "success_title": "¡Repá simí!",
+    "success_desc": "Repá simí napawí séwachi.",
+    "receipt_hash": "Repá simí:",
+    "download_receipt": "Repá PDF simí",
+    "finish": "Riká",
+    "offline_banner": "Sin conexión — Repá napawí. Conéctate.",
+    "network_error": "Repá no simí. Inténtalo."
+  },
+  "transparency": {
+    "live_chart": "Gráfica de resultados en tiempo real"
+  },
+  "language": {
+    "select": "Idioma",
+    "es": "Español",
+    "es_easy": "Fácil",
+    "rar": "Rarámuri"
+  }
+}

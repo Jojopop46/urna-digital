@@ -1,0 +1,36 @@
+services:
+  - type: web
+    name: urna-digital-backend
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    rootDir: .
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: urna-digital-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: urna-digital-redis
+          property: connectionString
+      - key: FRONTEND_URL
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: HMAC_SECRET
+        generateValue: true
+      - key: PROCESS_SALT
+        generateValue: true
+    healthCheckPath: /health
+    plan: free
+
+databases:
+  - name: urna-digital-db
+    plan: free
+    postgresMajorVersion: 16
+
+redis:
+  - name: urna-digital-redis
+    plan: free
+    ipAllowList: []

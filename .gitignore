@@ -1,0 +1,35 @@
+# Dependencies
+frontend/node_modules/
+backend/models/
+*.pkl
+
+# Build outputs
+frontend/dist/
+backend/__pycache__/
+*.py[cod]
+*$py.class
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker
+postgres_data/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Playwright
+frontend/debug-page.cjs

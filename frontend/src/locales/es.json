@@ -1,0 +1,60 @@
+{
+  "nav": {
+    "home": "Inicio",
+    "transparency": "Transparencia",
+    "verify": "Verificar",
+    "vote": "Votar Ahora",
+    "admin": "Admin",
+    "proposals": "Proponer"
+  },
+  "home": {
+    "title": "Plataforma de Participación Ciudadana",
+    "subtitle": "Ejerce tu derecho al voto de manera segura, transparente y desde cualquier lugar del estado de Chihuahua.",
+    "vote": "Votar",
+    "results": "Resultados",
+    "propose": "Proponer"
+  },
+  "wizard": {
+    "step1_label": "Identidad",
+    "step2_label": "Intención",
+    "step3_label": "Voto",
+    "step4_label": "Recibo",
+    "step1_title": "Autenticación Ciudadana",
+    "step2_title": "Selecciona una Iniciativa",
+    "step3_title": "Confirma tu Voto",
+    "step4_title": "Comprobante de Voto Criptográfico",
+    "step1_title": "Autenticación Ciudadana",
+    "step2_title": "Selecciona una Iniciativa",
+    "step3_title": "Confirma tu Voto",
+    "step4_title": "Comprobante de Voto Criptográfico",
+    "ine_label": "Clave de Elector (INE)",
+    "ine_placeholder": "18 caracteres alfanuméricos",
+    "ine_error_length": "La Clave de Elector debe tener 18 caracteres.",
+    "captcha_label": "Verificación de Seguridad (CAPTCHA)",
+    "captcha_desc": "Resuelve la siguiente operación matemática para comprobar que eres humano:",
+    "validate_identity": "Validar Identidad",
+    "continue": "Continuar",
+    "back": "Atrás",
+    "change_vote": "Cambiar mi voto",
+    "confirm_and_emit": "Confirmar y Emitir Voto",
+    "confirm_emit_aria": "Confirmar y Emitir Voto",
+    "emitting": "Emitiendo...",
+    "review_warning": "Revisa tu selección cuidadosamente. Una vez emitido el voto, no podrás cambiarlo bajo ninguna circunstancia.",
+    "success_title": "¡Voto Emitido Exitosamente!",
+    "success_desc": "Tu voto ha sido registrado en la blockchain de manera segura y completamente anónima.",
+    "receipt_hash": "Hash de Verificación del Recibo:",
+    "download_receipt": "Descargar PDF (TXT)",
+    "finish": "Finalizar Sesión y Salir",
+    "offline_banner": "Sin conexión — Tu selección está guardada. Conéctate para emitir tu voto.",
+    "network_error": "Tu voto NO fue registrado por un error de red o no tienes conexión. Inténtalo de nuevo."
+  },
+  "transparency": {
+    "live_chart": "Gráfica de resultados en tiempo real"
+  },
+  "language": {
+    "select": "Seleccionar idioma",
+    "es": "Español",
+    "es_easy": "Fácil",
+    "rar": "Rarámuri"
+  }
+}
