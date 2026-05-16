@@ -3,7 +3,6 @@ services:
     name: urna-digital-backend
     runtime: docker
     dockerfilePath: ./backend/Dockerfile
-    rootDir: .
     envVars:
       - key: DATABASE_URL
         fromDatabase:
@@ -15,7 +14,7 @@ services:
           name: urna-digital-redis
           property: connectionString
       - key: FRONTEND_URL
-        sync: false
+        value: ""
       - key: JWT_SECRET
         generateValue: true
       - key: HMAC_SECRET
