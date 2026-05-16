@@ -2,7 +2,8 @@ services:
   - type: web
     name: urna-digital-backend
     runtime: docker
-    dockerfilePath: ./backend/Dockerfile
+    dockerfilePath: ./Dockerfile
+    rootDir: ./backend
     envVars:
       - key: DATABASE_URL
         fromDatabase:
