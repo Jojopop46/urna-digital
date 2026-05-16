@@ -3,7 +3,7 @@
     "home": "Inicio",
     "transparency": "Transparencia",
     "verify": "Verificar",
-    "vote": "Votar",
+    "vote": "Votar Ahora",
     "admin": "Admin",
     "proposals": "Proponer"
   },
@@ -12,7 +12,36 @@
     "subtitle": "Repá simí napawí séwachi chihuahua.",
     "vote": "Repá simí",
     "results": "Napawí",
-    "propose": "Mapí"
+    "propose": "Mapí",
+    "badge": "Seguro · Transparente · Accesible",
+    "features": {
+      "anonymous": {
+        "title": "Voto Anónimo",
+        "desc": "Tu identidad está protegida con tecnología de conocimiento cero. Nadie puede vincular tu voto contigo."
+      },
+      "transparent": {
+        "title": "Transparencia Total",
+        "desc": "Cada voto se registra en una blockchain pública auditable. Puedes verificar tu voto cuando quieras."
+      },
+      "offline": {
+        "title": "Funciona Sin Internet",
+        "desc": "En zonas rurales puedes preparar tu voto offline y emitirlo cuando recuperes conexión."
+      }
+    },
+    "how_it_works": {
+      "title": "¿Cómo funciona?",
+      "steps": {
+        "1": { "title": "Identifícate", "desc": "Ingresa tu CURP y resuelve el CAPTCHA" },
+        "2": { "title": "Elige", "desc": "Selecciona la propuesta que más te convenga" },
+        "3": { "title": "Confirma", "desc": "Revisa tu selección y emite tu voto" },
+        "4": { "title": "Verifica", "desc": "Guarda tu recibo y comprueba en la blockchain" }
+      }
+    },
+    "cta": {
+      "title": "Tu voto cuenta",
+      "desc": "Participa en la construcción de un Chihuahua más democrático y transparente.",
+      "button": "Comenzar a Votar"
+    }
   },
   "wizard": {
     "step1_label": "Anéguame",
@@ -23,34 +52,187 @@
     "step2_title": "Napawí séwachi",
     "step3_title": "¿Né repá nakí?",
     "step4_title": "Repá simí",
-    "ine_label": "CURP ó INE repási",
-    "ine_placeholder": "18 anéguame",
-    "ine_error_length": "18 anéguame nijá.",
-    "captcha_label": "Anéguame simí",
-    "captcha_desc": "Anéguame simí jiká:",
-    "validate_identity": "Mapu",
-    "continue": "Mapu",
-    "back": "Riká",
-    "change_vote": "Riká repá",
-    "confirm_and_emit": "Eé, né repá",
-    "confirm_emit_aria": "Repá simí",
-    "emitting": "Simí...",
-    "review_warning": "Jiká repá kití simí.",
-    "success_title": "¡Repá simí!",
-    "success_desc": "Repá simí napawí séwachi.",
-    "receipt_hash": "Repá simí:",
-    "download_receipt": "Repá PDF simí",
-    "finish": "Riká",
-    "offline_banner": "Sin conexión — Repá napawí. Conéctate.",
-    "network_error": "Repá no simí. Inténtalo."
+    "step_desc": {
+      "1": "Ingresa tu credencial de elector para verificar que eres ciudadano de Chihuahua.",
+      "2": "Selecciona una propuesta ciudadana. Puedes cambiar antes de confirmar.",
+      "3": "Revisa tu selección. Una vez emitido, no podrás cambiar tu voto.",
+      "4": "Tu voto ha sido registrado de forma segura y anónima."
+    },
+    "ine_label": "Clave de Elector (INE)",
+    "ine_placeholder": "18 caracteres alfanuméricos",
+    "ine_error_length": "La Clave de Elector debe tener 18 caracteres.",
+    "captcha_label": "Verificación de seguridad",
+    "captcha_desc": "Resuelve la suma para continuar",
+    "captcha_placeholder": "?",
+    "validate_identity": "Validar Identidad",
+    "continue": "Continuar",
+    "back": "Atrás",
+    "change_vote": "Cambiar mi voto",
+    "confirm_and_emit": "Confirmar y Emitir Voto",
+    "confirm_emit_aria": "Confirmar y Emitir Voto",
+    "emitting": "Emitiendo...",
+    "review_warning": "Revisa tu selección cuidadosamente. Una vez emitido el voto, no podrás cambiarlo bajo ninguna circunstancia.",
+    "success_title": "¡Voto Emitido Exitosamente!",
+    "success_desc": "Tu voto ha sido registrado en la blockchain de manera segura y completamente anónima.",
+    "receipt_hash": "Hash de Verificación del Recibo:",
+    "receipt_hint": "Guarda este código. Puedes verificar tu voto en cualquier momento.",
+    "download_receipt": "Descargar PDF (TXT)",
+    "finish": "Finalizar Sesión y Salir",
+    "offline_banner": "Sin conexión — Tu selección está guardada. Conéctate para emitir tu voto.",
+    "network_error": "Tu voto NO fue registrado por un error de red o no tienes conexión. Inténtalo de nuevo.",
+    "offline_msg": "Necesitas conexión a internet para emitir tu voto",
+    "progress_label": "Progreso de votación",
+    "voice_guide": {
+      "step_1": "Paso 1: Identificación. Escribe tu clave de elector. Son 18 letras y números. Luego resuelve la suma y presiona el botón Validar.",
+      "step_2": "Paso 2: Elige. Usa las flechas para ver las propuestas. Presiona espacio para elegir una. Luego presiona Continuar.",
+      "step_3": "Paso 3: Confirma. Mira la propuesta que elegiste. Si te gusta, presiona Confirmar y Emitir Voto. Si no, presiona Cambiar mi voto.",
+      "step_4": "Paso 4: Recibo. Tu voto está guardado. Guarda el código. Puedes copiarlo o descargarlo. Presiona Finalizar para salir.",
+      "repeat": "Repetir instrucciones"
+    },
+    "voice_cmd": {
+      "listen": "Comando de voz",
+      "listening": "Escuchando... di un comando",
+      "not_supported": "Tu navegador no permite comandos de voz",
+      "heard": "Escuché: {text}"
+    }
   },
   "transparency": {
-    "live_chart": "Gráfica de resultados en tiempo real"
+    "title": "Transparencia y Resultados",
+    "subtitle": "Datos públicos en tiempo real. Cada voto es verificable.",
+    "live_chart": "Gráfica de resultados en tiempo real",
+    "stats": {
+      "proposals": "Propuestas activas",
+      "votes": "Votos registrados",
+      "blocks": "Bloques en cadena"
+    },
+    "live_badge": "En vivo",
+    "empty_state": "Aún no hay votos registrados. ¡Sé el primero en participar!",
+    "info": {
+      "transparency": {
+        "title": "¿Cómo se garantiza la transparencia?",
+        "items": [
+          "Cada voto se hashea y se agrega a una blockchain pública",
+          "La raíz Merkle se calcula en tiempo real",
+          "Cualquier ciudadano puede verificar su voto con el recibo"
+        ]
+      },
+      "privacy": {
+        "title": "¿Dónde está mi información personal?",
+        "items": [
+          "No almacenamos CURP ni datos personales",
+          "Usamos pruebas de conocimiento cero (ZK-Proofs)",
+          "Tu identidad nunca se vincula con tu voto"
+        ]
+      }
+    }
+  },
+  "verify": {
+    "title": "Verifica tu voto",
+    "subtitle": "Ingresa el código de tu recibo para confirmar que fue registrado correctamente en la blockchain.",
+    "form": {
+      "label": "Código de recibo (hash)",
+      "placeholder": "Ej: 00dbcbf743b775128c9..."
+    },
+    "button": "Verificar en blockchain",
+    "result": {
+      "success": {
+        "title": "Voto verificado",
+        "desc": "Tu voto está registrado en el bloque #{block}. La blockchain garantiza que no ha sido alterado."
+      },
+      "error": {
+        "title": "Voto no encontrado",
+        "desc": "Este código no figura en la blockchain. Verifica que lo hayas copiado correctamente."
+      },
+      "demo": {
+        "title": "Verificación local (modo demo)",
+        "desc": "El formato del código es válido. En producción se verificaría contra la blockchain."
+      },
+      "server_error": {
+        "title": "No se pudo verificar",
+        "desc": "El servidor no responde. Intenta más tarde."
+      }
+    },
+    "tips": {
+      "title": "Consejos",
+      "items": [
+        "Tu recibo se descargó automáticamente como archivo .txt al votar.",
+        "El código es un hash único que identifica tu voto de forma anónima.",
+        "Si perdiste tu recibo, no puedes recuperarlo. ¡Guárdalo bien!"
+      ]
+    }
+  },
+  "admin": {
+    "login": {
+      "title": "Panel Administrativo IEE",
+      "subtitle": "Acceso exclusivo para personal autorizado del Instituto.",
+      "user_label": "Usuario",
+      "user_placeholder": "Ej. IEE1",
+      "pass_label": "Contraseña",
+      "pass_placeholder": "Contraseña",
+      "button": "Ingresar al Sistema",
+      "error": "Usuario o contraseña incorrectos"
+    },
+    "dashboard": {
+      "title": "Panel de Administración",
+      "subtitle": "Gestión de propuestas y monitoreo de votación",
+      "logout": "Cerrar Sesión"
+    },
+    "settings": {
+      "title": "Configuración",
+      "deadline_label": "Fecha límite de votación"
+    },
+    "admins": {
+      "title": "Administradores",
+      "user_label": "Nuevo usuario",
+      "user_placeholder": "Ej. IEE2",
+      "pass_label": "Contraseña",
+      "pass_placeholder": "Mínimo 4 caracteres",
+      "button": "Crear administrador",
+      "error_exists": "El usuario ya existe.",
+      "success": "Usuario {user} creado exitosamente."
+    },
+    "proposals": {
+      "title": "Propuestas Pendientes",
+      "empty": "No hay propuestas pendientes",
+      "approve": "Aprobar",
+      "reject": "Rechazar"
+    }
+  },
+  "proposals": {
+    "title": "Propuestas Ciudadanas",
+    "success": "¡Propuesta enviada!",
+    "form": {
+      "title_label": "Título",
+      "desc_label": "Descripción",
+      "cost_label": "Costo Estimado",
+      "area_label": "Área",
+      "municipio_label": "Municipio",
+      "submit": "Enviar Propuesta"
+    },
+    "list_title": "Propuestas Aprobadas"
   },
   "language": {
-    "select": "Idioma",
+    "select": "Seleccionar idioma",
     "es": "Español",
     "es_easy": "Fácil",
-    "rar": "Rarámuri"
+    "rar": "Rarámuri",
+    "men": "Plautdietsch"
+  },
+  "a11y": {
+    "skip_to_content": "Saltar al contenido principal",
+    "copy_hash": "Copiar hash",
+    "hash_copied": "Hash copiado al portapapeles",
+    "open_menu": "Abrir menú",
+    "close_menu": "Cerrar menú",
+    "dark_mode": "Activar modo oscuro",
+    "light_mode": "Activar modo claro",
+    "step_x_of_y": "Paso {step} de {total}: {label}",
+    "vote_option_selected": "Opción seleccionada",
+    "loading": "Cargando",
+    "menu": "Menú de navegación",
+    "clear": "Borrar",
+    "tts_on": "Activar lector de pantalla",
+    "tts_off": "Desactivar lector de pantalla",
+    "tts_active": "Lector de pantalla activado"
   }
 }

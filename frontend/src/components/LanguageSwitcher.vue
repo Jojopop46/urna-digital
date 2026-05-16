@@ -23,7 +23,8 @@ const { locale } = useI18n()
 const langs = [
   { code: 'es', label: 'Español', name: 'Español estándar', flag: '🇲🇽' },
   { code: 'es-easy', label: 'Fácil', name: 'Español fácil de leer', flag: '🇲🇽' },
-  { code: 'rar', label: 'Rarámuri', name: 'Idioma Rarámuri', flag: '🏔️' }
+  { code: 'rar', label: 'Rarámuri', name: 'Idioma Rarámuri', flag: '🏔️' },
+  { code: 'men', label: 'Plautdietsch', name: 'Idioma Plautdietsch (Menonita)', flag: '🌾' }
 ]
 
 const setLang = (code: string) => {

@@ -15,6 +15,9 @@
       <router-link to="/transparencia" @click="closeMenu">{{ $t('nav.transparency') }}</router-link>
       <router-link to="/verificar" @click="closeMenu">{{ $t('nav.verify') }}</router-link>
       <LanguageSwitcher />
+      <button @click="toggleTTS" class="tts-toggle" :class="{ active: ttsEnabled }" :aria-label="ttsEnabled ? $t('a11y.tts_off') : $t('a11y.tts_on')" :title="ttsEnabled ? $t('a11y.tts_off') : $t('a11y.tts_on')">
+        <svg aria-hidden="true" focusable="false" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+      </button>
       <button @click="toggleTheme" class="theme-toggle" :aria-label="theme==='light' ? $t('a11y.dark_mode') : $t('a11y.light_mode')" :title="$t('a11y.dark_mode') + ' / ' + $t('a11y.light_mode')">
         <svg v-if="theme === 'light'" aria-hidden="true" focusable="false" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
         <svg v-else aria-hidden="true" focusable="false" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/></svg>
@@ -33,13 +36,22 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, nextTick } from 'vue';
+import { ref, onMounted, nextTick, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 import NetworkStatus from './components/NetworkStatus.vue'
 import LanguageSwitcher from './components/LanguageSwitcher.vue'
+import { useTTS } from './composables/useTTS'
 
 const theme = ref(localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'));
 const menuOpen = ref(false);
 const firstLinkRef = ref<HTMLAnchorElement | null>(null);
+
+const { locale } = useI18n();
+const { enabled: ttsEnabled, toggle: toggleTTS } = useTTS();
+
+watch(locale, (newLocale) => {
+  document.documentElement.lang = newLocale === 'men' ? 'de' : (newLocale === 'rar' ? 'es' : newLocale);
+}, { immediate: true });
 
 const toggleTheme = () => {
   theme.value = theme.value === 'light' ? 'dark' : 'light';
@@ -81,6 +93,27 @@ onMounted(() => {
 .theme-toggle:hover {
   background: var(--primary-light);
   color: var(--primary);
+}
+
+.tts-toggle {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: var(--transition);
+}
+.tts-toggle:hover {
+  background: var(--primary-light);
+  color: var(--primary);
+}
+.tts-toggle.active {
+  background: var(--primary);
+  color: white;
 }
 
 .menu-toggle {

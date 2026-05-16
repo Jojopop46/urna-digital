@@ -11,10 +11,27 @@
     <!-- Live region para anuncios de paso -->
     <div class="sr-only" aria-live="polite" aria-atomic="true">{{ stepAnnouncement }}</div>
     <div class="sr-only" aria-live="polite" aria-atomic="true">{{ copyAnnouncement }}</div>
+    <div class="sr-only" aria-live="polite" aria-atomic="true">{{ voiceFeedback }}</div>
 
     <!-- Progress -->
     <div class="progress-bar" role="progressbar" :aria-valuenow="store.paso" aria-valuemin="1" aria-valuemax="4" :aria-label="$t('wizard.progress_label')">
       <div class="progress-fill" :style="{ width: ((store.paso / 4) * 100) + '%' }"></div>
+    </div>
+
+    <div v-if="voiceSupported" class="voice-cmd-bar">
+      <button
+        type="button"
+        class="voice-cmd-btn"
+        :class="{ listening: voiceListening }"
+        @click="voiceListening ? stopListening() : startListening()"
+        :aria-label="voiceListening ? $t('wizard.voice_cmd.listening') : $t('wizard.voice_cmd.listen')"
+        :title="voiceListening ? $t('wizard.voice_cmd.listening') : $t('wizard.voice_cmd.listen')"
+      >
+        <svg v-if="!voiceListening" aria-hidden="true" focusable="false" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+        <svg v-else aria-hidden="true" focusable="false" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/><circle cx="12" cy="12" r="10" stroke-dasharray="4 2"/></svg>
+        <span>{{ voiceListening ? $t('wizard.voice_cmd.listening') : $t('wizard.voice_cmd.listen') }}</span>
+      </button>
+      <span v-if="voiceTranscript && !voiceListening" class="voice-transcript">{{ $t('wizard.voice_cmd.heard', { text: voiceTranscript }) }}</span>
     </div>
 
     <nav class="wizard-progress" :aria-label="$t('a11y.step_x_of_y', { step: store.paso, total: 4, label: $t(steps[store.paso - 1]?.labelKey || '') })">
@@ -38,6 +55,10 @@
           <div class="step-icon" aria-hidden="true">🪪</div>
           <h2 ref="stepTitleRef" tabindex="-1">{{ $t('wizard.step1_title') }}</h2>
           <p class="step-desc">{{ $t('wizard.step_desc.1') }}</p>
+          <button type="button" class="voice-guide-btn" @click="readVoiceGuide(1)" :aria-label="$t('wizard.voice_guide.repeat')">
+            <svg aria-hidden="true" focusable="false" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+            {{ $t('wizard.voice_guide.repeat') }}
+          </button>
         </div>
 
         <div class="form-group">
@@ -89,6 +110,10 @@
           <div class="step-icon" aria-hidden="true">📋</div>
           <h2 ref="stepTitleRef" tabindex="-1">{{ $t('wizard.step2_title') }}</h2>
           <p class="step-desc">{{ $t('wizard.step_desc.2') }}</p>
+          <button type="button" class="voice-guide-btn" @click="readVoiceGuide(2)" :aria-label="$t('wizard.voice_guide.repeat')">
+            <svg aria-hidden="true" focusable="false" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+            {{ $t('wizard.voice_guide.repeat') }}
+          </button>
         </div>
 
         <div class="options-list" role="radiogroup" :aria-label="$t('wizard.step2_title')">
@@ -134,6 +159,10 @@
           <div class="step-icon" aria-hidden="true">⚠️</div>
           <h2 ref="stepTitleRef" tabindex="-1">{{ $t('wizard.step3_title') }}</h2>
           <p class="step-desc">{{ $t('wizard.step_desc.3') }}</p>
+          <button type="button" class="voice-guide-btn" @click="readVoiceGuide(3)" :aria-label="$t('wizard.voice_guide.repeat')">
+            <svg aria-hidden="true" focusable="false" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+            {{ $t('wizard.voice_guide.repeat') }}
+          </button>
         </div>
 
         <div class="confirm-box" v-if="opcionSeleccionada">
@@ -176,6 +205,10 @@
           </div>
           <h2 ref="stepTitleRef" tabindex="-1">{{ $t('wizard.success_title') }}</h2>
           <p class="receipt-desc">{{ $t('wizard.success_desc') }}</p>
+          <button type="button" class="voice-guide-btn" @click="readVoiceGuide(4)" :aria-label="$t('wizard.voice_guide.repeat')">
+            <svg aria-hidden="true" focusable="false" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+            {{ $t('wizard.voice_guide.repeat') }}
+          </button>
         </div>
 
         <div class="receipt-card">
@@ -210,9 +243,61 @@ import { useI18n } from 'vue-i18n';
 import { useUrnaStore } from '../stores/useUrnaStore';
 import { useCryptoRandom } from '../composables/useCryptoRandom';
 import { api } from '../services/api';
+import { speak } from '../composables/useTTS';
+import { useVoiceCommand, startListening, stopListening } from '../composables/useVoiceCommand';
 
 const { t } = useI18n();
 const { randomId } = useCryptoRandom();
+const { isSupported: voiceSupported, isListening: voiceListening, lastCommand: voiceLastCommand, transcript: voiceTranscript } = useVoiceCommand();
+
+const readVoiceGuide = (step: number) => {
+  const key = `wizard.voice_guide.step_${step}` as const;
+  speak(t(key));
+};
+
+const readCurrentScreen = () => {
+  const step = store.paso;
+  let text = '';
+  if (step === 1) {
+    text = `${t('wizard.step1_title')}. ${t('wizard.step_desc.1')}`;
+  } else if (step === 2) {
+    const opts = opciones.value.map((o, i) => `Opción ${i + 1}: ${o.titulo}`).join('. ');
+    text = `${t('wizard.step2_title')}. ${opts}`;
+  } else if (step === 3 && opcionSeleccionada.value) {
+    text = `${t('wizard.step3_title')}. ${opcionSeleccionada.value.titulo}. ${t('wizard.review_warning')}`;
+  } else if (step === 4) {
+    text = `${t('wizard.success_title')}. ${t('wizard.success_desc')}. ${t('wizard.receipt_hash')} ${recibo.value}`;
+  }
+  speak(text);
+};
+
+watch(voiceLastCommand, (cmd) => {
+  if (!cmd) return;
+  const step = store.paso;
+  if (cmd.type === 'next') {
+    if (step === 1 && captchaValido.value && ine.value.length === 18) validarIdentidad();
+    else if (step === 2 && store.seleccion) goToStep(3);
+    else if (step === 3 && !isSubmitting.value && isOnline.value) emitirVoto();
+    else if (step === 4) finalizar();
+  } else if (cmd.type === 'back') {
+    if (step === 2) goToStep(1);
+    else if (step === 3) goToStep(2);
+  } else if (cmd.type === 'select' && step === 2) {
+    const opts = opciones.value;
+    if (cmd.index >= 0 && cmd.index < opts.length) {
+      store.seleccion = opts[cmd.index].id;
+      speak(`Seleccionado: ${opts[cmd.index].titulo}`);
+    }
+  } else if (cmd.type === 'confirm') {
+    if (step === 3 && !isSubmitting.value && isOnline.value) emitirVoto();
+  } else if (cmd.type === 'repeat') {
+    readVoiceGuide(step);
+  } else if (cmd.type === 'cancel') {
+    finalizar();
+  } else if (cmd.type === 'read_screen') {
+    readCurrentScreen();
+  }
+});
 const store = useUrnaStore();
 const ine = ref('');
 const ineError = ref('');
@@ -227,6 +312,11 @@ const isOnline = ref(navigator.onLine);
 const stepTitleRef = ref<HTMLHeadingElement | null>(null);
 const optionRefs = ref<HTMLButtonElement[]>([]);
 const copyAnnouncement = ref('');
+const voiceFeedback = computed(() => {
+  if (voiceListening.value) return t('wizard.voice_cmd.listening');
+  if (voiceTranscript.value) return t('wizard.voice_cmd.heard', { text: voiceTranscript.value });
+  return '';
+});
 
 const steps = [
   { labelKey: 'wizard.step1_label' },
@@ -254,6 +344,9 @@ const goToStep = (step: number) => {
 watch(() => store.paso, () => {
   nextTick(() => {
     stepTitleRef.value?.focus();
+    const label = t(steps[store.paso - 1]?.labelKey || '');
+    speak(t('a11y.step_x_of_y', { step: store.paso, total: 4, label }));
+    readVoiceGuide(store.paso);
   });
 });
 
@@ -263,6 +356,7 @@ const validarIdentidad = () => {
   ineError.value = '';
   if (ine.value.length !== 18 || !INE_REGEX.test(ine.value)) {
     ineError.value = t('wizard.ine_error_length');
+    speak(ineError.value);
     return;
   }
   store.tokenSesion = randomId('sesion');
@@ -308,9 +402,11 @@ const emitirVoto = async () => {
     });
     clearTimeout(id);
     recibo.value = data.block_hash || data.nullifier || data.receipt_token;
+    speak(t('wizard.success_title'));
   } catch (e: any) {
     networkError.value = true;
     ineError.value = e.message || t('wizard.network_error');
+    speak(ineError.value);
     isSubmitting.value = false;
     return;
   }
@@ -337,6 +433,7 @@ const descargarComprobante = () => {
 const copiarRecibo = () => {
   navigator.clipboard.writeText(recibo.value);
   copyAnnouncement.value = t('a11y.hash_copied');
+  speak(copyAnnouncement.value);
   setTimeout(() => { copyAnnouncement.value = ''; }, 2000);
 };
 
@@ -469,6 +566,68 @@ onUnmounted(() => {
   color: var(--text-muted);
   max-width: 480px;
   margin: 0 auto;
+}
+.voice-guide-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  margin-top: 0.75rem;
+  padding: 0.5rem 0.875rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--primary);
+  background: var(--primary-light);
+  border: 1px solid var(--primary);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: var(--transition);
+}
+.voice-guide-btn:hover {
+  background: var(--primary);
+  color: white;
+}
+
+/* Voice command bar */
+.voice-cmd-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+.voice-cmd-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-main);
+  background: var(--panel-bg);
+  border: 2px solid var(--panel-border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: var(--transition);
+}
+.voice-cmd-btn:hover {
+  border-color: var(--primary);
+}
+.voice-cmd-btn.listening {
+  background: var(--danger-light);
+  border-color: var(--danger);
+  color: var(--danger);
+  animation: pulse-danger 1.5s infinite;
+}
+@keyframes pulse-danger {
+  0% { box-shadow: 0 0 0 0 rgba(var(--danger-rgb, 220 38 38), 0.4); }
+  70% { box-shadow: 0 0 0 10px rgba(var(--danger-rgb, 220 38 38), 0); }
+  100% { box-shadow: 0 0 0 0 rgba(var(--danger-rgb, 220 38 38), 0); }
+}
+.voice-transcript {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  font-style: italic;
 }
 
 /* Form inputs */

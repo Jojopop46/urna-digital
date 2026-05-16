@@ -81,7 +81,20 @@
     "offline_banner": "Sin internet — Tu elección está guardada. Conéctate para votar.",
     "network_error": "No se pudo enviar el voto por falta de internet. Inténtalo de nuevo.",
     "offline_msg": "Necesitas internet para enviar tu voto",
-    "progress_label": "Avance de la votación"
+    "progress_label": "Avance de la votación",
+    "voice_guide": {
+      "step_1": "Paso 1: Identificación. Escribe tu clave de elector. Son 18 letras y números. Luego resuelve la suma y presiona el botón Validar.",
+      "step_2": "Paso 2: Elige. Usa las flechas para ver las propuestas. Presiona espacio para elegir una. Luego presiona Continuar.",
+      "step_3": "Paso 3: Confirma. Mira la propuesta que elegiste. Si te gusta, presiona Confirmar y Emitir Voto. Si no, presiona Cambiar mi voto.",
+      "step_4": "Paso 4: Recibo. Tu voto está guardado. Guarda el código. Puedes copiarlo o descargarlo. Presiona Finalizar para salir.",
+      "repeat": "Repetir instrucciones"
+    },
+    "voice_cmd": {
+      "listen": "Comando de voz",
+      "listening": "Escuchando... di un comando",
+      "not_supported": "Tu navegador no permite comandos de voz",
+      "heard": "Escuché: {text}"
+    }
   },
   "transparency": {
     "title": "Transparencia y Resultados",
@@ -202,7 +215,8 @@
     "select": "Cambiar idioma",
     "es": "Español",
     "es_easy": "Fácil",
-    "rar": "Rarámuri"
+    "rar": "Rarámuri",
+    "men": "Plautdietsch"
   },
   "a11y": {
     "skip_to_content": "Saltar al contenido",
@@ -216,6 +230,9 @@
     "vote_option_selected": "Opción elegida",
     "loading": "Cargando",
     "menu": "Menú",
-    "clear": "Borrar"
+    "clear": "Borrar",
+    "tts_on": "Activar lector de pantalla",
+    "tts_off": "Desactivar lector de pantalla",
+    "tts_active": "Lector de pantalla activado"
   }
 }

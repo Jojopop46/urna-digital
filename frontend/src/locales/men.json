@@ -1,0 +1,238 @@
+{
+  "nav": {
+    "home": "Heem",
+    "transparency": "Transparenz",
+    "verify": "Prüwen",
+    "vote": "Stimm jewe",
+    "admin": "Verwolten",
+    "proposals": "Vörschlääj"
+  },
+  "home": {
+    "title": "Plautform för Bürgerbeteiligung",
+    "subtitle": "Oowen diene Recht to stimm on sekja, transparen un fon jeeden Platz in Chihuahua.",
+    "vote": "Stimm",
+    "results": "Resultoat",
+    "propose": "Vörschlo",
+    "badge": "Seker · Transparent · Tugänglich",
+    "features": {
+      "anonymous": {
+        "title": "Anonym Stimm",
+        "desc": "Dien Identität es met Zero-Knowledge-Technologie beschoatet. Niemand kann dien Stimm met die vobinne."
+      },
+      "transparent": {
+        "title": "Volle Transparenz",
+        "desc": "Jeede Stimm wad in ene öffentliche Blockchain opjenommen. Dü kannst dien Stimm emmer no prüwen."
+      },
+      "offline": {
+        "title": "Ohne Internet",
+        "desc": "In ländliche Rejions kannst dü dien Stimm offline vorbereiden un emittiere, wanst weajer Verbindung host."
+      }
+    },
+    "how_it_works": {
+      "title": "Wie funktioniert et?",
+      "steps": {
+        "1": { "title": "Identifizieren", "desc": "Ingeew diene Wähler-ID un löss dat CAPTCHA" },
+        "2": { "title": "Utwählen", "desc": "Wähj den Vörschlo, den dü am liebsten host" },
+        "3": { "title": "Bestätijen", "desc": "Prüw diene Utwahl un emittiere dien Stimm" },
+        "4": { "title": "Prüwen", "desc": "Spieker dien Empfong un prüw em Blockchain" }
+      }
+    },
+    "cta": {
+      "title": "Dien Stimm zellt",
+      "desc": "Nimm teil am Bo von en demokratischer un transparenter Chihuahua.",
+      "button": "Stimm beginnen"
+    }
+  },
+  "wizard": {
+    "step1_label": "Wie es dü?",
+    "step2_label": "Utwahl",
+    "step3_label": "Stimm",
+    "step4_label": "Empfong",
+    "step1_title": "Bürgerauthentifizierung",
+    "step2_title": "Wähl en Initiative",
+    "step3_title": "Bestätij dien Stimm",
+    "step4_title": "Kryptografischer Stimmempfong",
+    "step_desc": {
+      "1": "Ingeew diene Wählerkort, um to bestätijen, dat dü Bürger von Chihuahua es.",
+      "2": "Wähl en Bürgervörschlo. Dü kannst et ännern, bevür dü bestätijst.",
+      "3": "Prüw diene Utwahl. Wan emittiert, kannst dü dien Stimm nich mieh ännern.",
+      "4": "Dien Stimm es sekja un anonym registriert jewesen."
+    },
+    "ine_label": "Wähler-ID (INE)",
+    "ine_placeholder": "18 alphanumerische Zeichen",
+    "ine_error_length": "Dee Wähler-ID mott 18 Zeichen haen.",
+    "captcha_label": "Sekerheitsprüwung",
+    "captcha_desc": "Löss dee Somm, um weiter to maken",
+    "captcha_placeholder": "?",
+    "validate_identity": "Identität prüwen",
+    "continue": "Wieder",
+    "back": "Torück",
+    "change_vote": "Stimm ännern",
+    "confirm_and_emit": "Bestätijen un Stimm emittieren",
+    "confirm_emit_aria": "Bestätijen un Stimm emittieren",
+    "emitting": "Emittiere...",
+    "review_warning": "Prüw diene Utwahl sacht. Wan emittiert, kannst dü dien Stimm unner kjeen Umstand ännern.",
+    "success_title": "Stimm erfolgreich emittiert!",
+    "success_desc": "Dien Stimm es sekja un vollstännig anonym in dee Blockchain registriert jewesen.",
+    "receipt_hash": "Prüw-Hash vom Empfong:",
+    "receipt_hint": "Spieker dee Kode. Dü kannst dien Stimm emmer prüwen.",
+    "download_receipt": "PDF (TXT) erunterladen",
+    "finish": "Sitzung beenden un rut",
+    "offline_banner": "Kjeen Verbindung — Dien Utwahl es speichert. Maak Verbindung, um to stimm.",
+    "network_error": "Dien Stimm es NICH registriert jewesen wejen ene Netwarkfehler. Probier et noch enmol.",
+    "offline_msg": "Dü brauchs Internet, um dien Stimm to emittieren",
+    "progress_label": "Stimmfortschritt",
+    "voice_guide": {
+      "step_1": "Schritt 1: Identifizieren. Schriev diene Wähler-ID in dee Feld. Et mott 18 Zeichen sien. Denn löss dee Somm un drück Validieren.",
+      "step_2": "Schritt 2: Utwählen. Bruuk dee Pfeile, um de Vörschlääj to sähn. Drück Leerstee, um een uttowählen. Denn drück Wieder.",
+      "step_3": "Schritt 3: Bestätijen. Kiek dien utwählte Vörschlo. Wan dü seker best, drück Bestätijen un Stimm emittieren. Wan nich, drück Stimm ännern.",
+      "step_4": "Schritt 4: Empfong. Dien Stimm es registriert. Spieker dee Kode. Dü kannst en kopieren of erunterladen. Drück Beenden, um rut to gonn.",
+      "repeat": "Instrukschonen wieajersähn"
+    },
+    "voice_cmd": {
+      "listen": "Stimmkommando",
+      "listening": "Heet... säg en Kommando",
+      "not_supported": "Dien Browser unnerstött kjeene Stimmkommandos",
+      "heard": "Ehet heet: {text}"
+    }
+  },
+  "transparency": {
+    "title": "Transparenz un Resultoaten",
+    "subtitle": "Echtzeit-Doten. Jeede Stimm es prüwbar.",
+    "live_chart": "Live-Resultoat-Diajramm",
+    "stats": {
+      "proposals": "Aktive Vörschlääj",
+      "votes": "Registrierte Stimmen",
+      "blocks": "Blöcke in Kjetten"
+    },
+    "live_badge": "Live",
+    "empty_state": "No kjeene Stimmen registriert. Wes de erste, de deelniimmt!",
+    "info": {
+      "transparency": {
+        "title": "Wie wad Transparenz garantiert?",
+        "items": [
+          "Jeede Stimm wad gehasht un in ene öffentliche Blockchain opjenommen",
+          "Dee Merkle-Root wad in Echtzeit berechnet",
+          "Jeeder Bürger kann sien Stimm met dem Empfong prüwen"
+        ]
+      },
+      "privacy": {
+        "title": "Wo es mie persönliche Information?",
+        "items": [
+          "We speichern kjeen CURP noch persönliche Doten",
+          "We bruken Zero-Knowledge-Proofs (ZK-Proofs)",
+          "Dien Identität wad nie met dien Stimm vobunnen"
+        ]
+      }
+    }
+  },
+  "verify": {
+    "title": "Prüw dien Stimm",
+    "subtitle": "Ingeew dee Kode von dien Empfong, um to bestätijen, dat et korrekt in dee Blockchain registriert es.",
+    "form": {
+      "label": "Empfongskode (Hash)",
+      "placeholder": "Bsp: 00dbcbf743b775128c9..."
+    },
+    "button": "In Blockchain prüwen",
+    "result": {
+      "success": {
+        "title": "Stimm prüwt",
+        "desc": "Dien Stimm es in Block #{block} registriert. Dee Blockchain garantiert, dat et nich manipuliert es."
+      },
+      "error": {
+        "title": "Stimm nich jeffunden",
+        "desc": "Dee Kode es nich in dee Blockchain. Prüw, ob dü en korrekt kopiert host."
+      },
+      "demo": {
+        "title": "Lokale Prüwung (Demo-Modus)",
+        "desc": "Dee Kodeformat es gültig. In Produktion wad et jäjen dee Blockchain prüwt."
+      },
+      "server_error": {
+        "title": "Konnt nich prüwt waden",
+        "desc": "Dee Server antwoort nich. Probier et später noch enmol."
+      }
+    },
+    "tips": {
+      "title": "Tipps",
+      "items": [
+        "Dien Empfong es automatisch as .txt-Datei erunterjeladen jewesen, wan dü jestimmt host.",
+        "Dee Kode es en eenmoliger Hash, de dien Stimm anonym identifiziert.",
+        "Wan dü dien Empfong verloren host, kannst dü en nich wieajerhaen. Bewoar en gut!"
+      ]
+    }
+  },
+  "admin": {
+    "login": {
+      "title": "IEE Verwoltungspanel",
+      "subtitle": "Exklusiver Zutritt för autorisiertes Personal von dem Institut.",
+      "user_label": "Benutzer",
+      "user_placeholder": "Bsp. IEE1",
+      "pass_label": "Passwort",
+      "pass_placeholder": "Passwort",
+      "button": "In System enjonn",
+      "error": "Falscher Benutzer noch Passwort"
+    },
+    "dashboard": {
+      "title": "Verwoltungspanel",
+      "subtitle": "Vörschlo-Verwoltung un Stimm-Monitoring",
+      "logout": "Sitzung beenden"
+    },
+    "settings": {
+      "title": "Instellungen",
+      "deadline_label": "Stimmdatum"
+    },
+    "admins": {
+      "title": "Verwolter",
+      "user_label": "Neje Benutzer",
+      "user_placeholder": "Bsp. IEE2",
+      "pass_label": "Passwort",
+      "pass_placeholder": "Minimum 4 Zeichen",
+      "button": "Verwolter erstellen",
+      "error_exists": "Dee Benutzer eschon doa.",
+      "success": "Benutzer {user} erfolgreich erstellt."
+    },
+    "proposals": {
+      "title": "Aussteehende Vörschlääj",
+      "empty": "Kjeene aussteehende Vörschlääj",
+      "approve": "Genehmijen",
+      "reject": "Oflehne"
+    }
+  },
+  "proposals": {
+    "title": "Bürgervörschlääj",
+    "success": "Vörschlo jeschickt!",
+    "form": {
+      "title_label": "Titel",
+      "desc_label": "Beschreibung",
+      "cost_label": "Geschätzte Kost",
+      "area_label": "Rejion",
+      "municipio_label": "Gemeende",
+      "submit": "Vörschlo jewe"
+    },
+    "list_title": "Genehmijte Vörschlääj"
+  },
+  "language": {
+    "select": "Sproch uutwählen",
+    "es": "Español",
+    "es_easy": "Fácil",
+    "rar": "Rarámuri",
+    "men": "Plautdietsch"
+  },
+  "a11y": {
+    "skip_to_content": "To Hauptinhalt springen",
+    "copy_hash": "Hash kopieren",
+    "hash_copied": "Hash kopiert to Zwischenablage",
+    "open_menu": "Menü opmaken",
+    "close_menu": "Menü tomaken",
+    "dark_mode": "Dunkelmodus anschalten",
+    "light_mode": "Hellmodus anschalten",
+    "step_x_of_y": "Schritt {step} von {total}: {label}",
+    "vote_option_selected": "Utwahl selektiert",
+    "loading": "Lade...",
+    "menu": "Navigationsmenü",
+    "clear": "Löschen",
+    "tts_on": "Bildschirmleser anschalten",
+    "tts_off": "Bildschirmleser usschalten",
+    "tts_active": "Bildschirmleser es an"
+  }
+}
