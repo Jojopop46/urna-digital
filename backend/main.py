@@ -40,7 +40,7 @@ async def lifespan(app: FastAPI):
 
 # --- App ---
 limiter = Limiter(key_func=get_remote_address)
-app = FastAPI(title="Urna Digital API", lifespan=lifespan)
+app = FastAPI(title="Voz ciudadana API", lifespan=lifespan)
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
@@ -162,7 +162,7 @@ async def _broadcast_results(process_id: str):
 # --- Endpoints ---
 @app.get("/")
 def read_root():
-    return {"message": "Urna Digital API Blockchain is running", "chain_valid": urna_chain.is_chain_valid()}
+    return {"message": "Voz ciudadana API Blockchain is running", "chain_valid": urna_chain.is_chain_valid()}
 
 @app.get("/health")
 async def health_check():

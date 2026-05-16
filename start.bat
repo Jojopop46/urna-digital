@@ -1,5 +1,5 @@
 @echo off
-echo Starting Urna Digital System...
+echo Starting Voz ciudadana System...
 docker-compose up -d --build
 echo System started successfully!
 echo Frontend: http://localhost:3000

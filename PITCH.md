@@ -1,4 +1,4 @@
-# 🗳️ Urna Digital Chihuahua — Pitch Perfecto
+# 🗳️ Voz ciudadana — Pitch Perfecto
 
 > **One-liner:** La primera urna digital de México que habla rarámuri, plautdietsch y español fácil; con voz, blockchain y privacidad de conocimiento cero para que **nadie se quede sin votar**.
 
@@ -18,7 +18,7 @@
 
 ---
 
-## 💡 2. LA SOLUCIÓN — Urna Digital Chihuahua
+## 💡 2. LA SOLUCIÓN — Voz ciudadana
 
 Una plataforma de participación ciudadana **100% accesible, anónima y verificable** que funciona en 4 idiomas, sin conexión constante y con navegación por voz.
 
@@ -108,7 +108,7 @@ Una plataforma de participación ciudadana **100% accesible, anónima y verifica
 
 ### Escenario A: María, 68 años, baja visión, Chihuahua capital
 1. **Entra a la plataforma.** Activa el "modo lector de pantalla" (botón del altavoz).
-2. **Escucha:** "Bienvenida a Urna Digital. Paso 1 de 4: Identificación..."
+2. **Escucha:** "Bienvenida a Voz ciudadana. Paso 1 de 4: Identificación..."
 3. **Escribe su clave de elector.** Cada tecla se lee en voz alta.
 4. **Resuelve el CAPTCHA** (suma simple). Presiona "Validar".
 5. **Escucha las propuestas.** "Opción 1: Mejoramiento de alumbrado público en Colonia Centro..."
@@ -183,7 +183,7 @@ Una plataforma de participación ciudadana **100% accesible, anónima y verifica
 
 > "En Chihuahua hay ciudadanos que necesitan viajar 6 horas, cruzar dos cañones y dejar su comunidad para poder opinar sobre el alumbrado de su calle. **Eso no es democracia. Eso es exclusión geográfica.**
 >
-> Urna Digital no solo vota. **Habla tu idioma, te escucha cuando no ves, y te acompaña cuando no hay internet.**
+> Voz ciudadana no solo vota. **Habla tu idioma, te escucha cuando no ves, y te acompaña cuando no hay internet.**
 >
 > Queremos que la democracia deje de ser un privilegio de quienes viven cerca de la ciudad. **Votar es un derecho, no una carretera.**"
 

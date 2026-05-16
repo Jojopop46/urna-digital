@@ -1,4 +1,4 @@
-# 🗳️ Urna Digital Chihuahua — Guía de Mejoras para Hackathon
+# 🗳️ Voz ciudadana — Guía de Mejoras para Hackathon
 
 > **Audiencia:** IA implementadora (Copilot, Claude, Cursor, GPT-4).
 > **Formato:** Cada mejora es autónoma. Sigue las instrucciones en el orden indicado sin saltarte pasos.
@@ -234,7 +234,7 @@ export default defineConfig({
         ]
       },
       manifest: {
-        name: 'Urna Digital Chihuahua',
+        name: 'Voz ciudadana',
         short_name: 'UrnaDigital',
         description: 'Plataforma de participación ciudadana',
         theme_color: '#1a237e',
@@ -348,7 +348,7 @@ async def send_otp(phone_number: str, process_id: str, redis: aioredis.Redis) ->
     client.messages.create(
         to=phone_number,
         from_=TWILIO_FROM,
-        body=f"Tu código de verificación Urna Digital Chihuahua: {otp}\nVálido 5 minutos. No lo compartas."
+        body=f"Tu código de verificación Voz ciudadana: {otp}\nVálido 5 minutos. No lo compartas."
     )
     return otp_hash  # Solo para testing; en producción no retornar
 
@@ -1103,7 +1103,7 @@ DEMO FINAL
 
 ## RESUMEN EJECUTIVO PARA PITCH
 
-> **Urna Digital Chihuahua** pasa de ser un sistema de voto electrónico funcional a una plataforma de democracia digital de clase mundial mediante 8 mejoras concretas:
+> **Voz ciudadana** pasa de ser un sistema de voto electrónico funcional a una plataforma de democracia digital de clase mundial mediante 8 mejoras concretas:
 >
 > 🔐 **ZK-Proofs** — Anonimato matemáticamente demostrable, no basado en confianza.
 > 📡 **PWA Offline** — Funciona en la Sierra Tarahumara sin internet estable.

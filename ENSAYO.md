@@ -1,4 +1,4 @@
-# 🎤 Guion de Ensayo — Urna Digital Chihuahua
+# 🎤 Guion de Ensayo — Voz ciudadana
 
 > **Duración objetivo:** 4 minutos de pitch + 4 minutos de Q&A.  
 > **Tono:** Apasionado pero técnico. No leas. Habla como si le contaras a un amigo por qué esto te importa.  
@@ -34,7 +34,7 @@
 
 **[GESTO: Abre las manos. Como si estuvieras ofreciendo algo.]**
 
-> *"Nosotros construimos Urna Digital Chihuahua.*
+> *"Nosotros construimos Voz ciudadana.*
 > *[PAUSA]*
 > *Y no, no es 'otra app de votos'.*
 > *[Sonríe.]*
@@ -191,7 +191,7 @@
 > *[PAUSA]*
 > *La tecnología más impresionante no es la más compleja. Es la que incluye a quienes nunca fueron incluidos.*
 > *[PAUSA. Mirada directa al jurado.]*
-> *Y eso es exactamente lo que hace Urna Digital.*"
+> *Y eso es exactamente lo que hace Voz ciudadana.*"
 
 ### 8. "¿Cómo se sostiene financieramente? ¿Es un negocio?"
 **[Tiempo: 25 segundos]**

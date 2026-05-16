@@ -26,8 +26,8 @@ export default defineConfig({
         ]
       },
       manifest: {
-        name: 'Urna Digital Chihuahua',
-        short_name: 'UrnaDigital',
+        name: 'Voz ciudadana',
+        short_name: 'VozCiudadana',
         description: 'Plataforma de participación ciudadana',
         theme_color: '#1a237e',
         background_color: '#ffffff',

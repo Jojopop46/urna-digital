@@ -18,8 +18,8 @@ export const router = createRouter({
 
 router.afterEach((to) => {
   const titleKey = to.meta?.titleKey as string | undefined
-  const pageTitle = titleKey ? i18n.global.t(titleKey) : 'Urna Digital'
+  const pageTitle = titleKey ? i18n.global.t(titleKey) : 'Voz ciudadana'
   nextTick(() => {
-    document.title = `${pageTitle} — Urna Digital`
+    document.title = `${pageTitle} — Voz ciudadana`
   })
 })

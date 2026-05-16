@@ -66,7 +66,7 @@ class Blockchain:
                 self.chain = [Block.from_model(b) for b in blocks]
 
     def create_genesis_block(self):
-        return Block(0, time(), "Bloque Genesis - Urna Digital Chihuahua", "0")
+        return Block(0, time(), "Bloque Genesis - Voz ciudadana", "0")
 
     def get_latest_block(self):
         return self.chain[-1]
