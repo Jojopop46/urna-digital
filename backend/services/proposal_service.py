@@ -41,3 +41,44 @@ async def update_proposal_status(session: AsyncSession, proposal_id: int, status
     await session.commit()
     await session.refresh(proposal)
     return proposal
+
+
+_DEFAULT_PROPOSALS = [
+    {
+        "titulo": "Mejoramiento de alumbrado público en zonas rurales",
+        "descripcion": "Instalación de luminarias LED solares en caminos rurales de difícil acceso para mejorar la seguridad nocturna y reducir accidentes.",
+        "costo": "$2,400,000 MXN",
+        "area": "Infraestructura",
+        "municipio": "Chihuahua",
+    },
+    {
+        "titulo": "Centro de salud digital para comunidades indígenas",
+        "descripcion": "Telemedicina y consulta médica remota en comunidades rarámuri y tepehuana con conectividad satelital y personal capacitado.",
+        "costo": "$1,800,000 MXN",
+        "area": "Salud",
+        "municipio": "Guachochi",
+    },
+    {
+        "titulo": "Recolección de agua pluvial en escuelas primarias",
+        "descripcion": "Sistemas de captación de agua de lluvia en 15 escuelas primarias rurales para garantizar abasto durante temporada de sequía.",
+        "costo": "$950,000 MXN",
+        "area": "Educación",
+        "municipio": "Cuauhtémoc",
+    },
+]
+
+
+async def seed_default_proposals(session: AsyncSession):
+    result = await session.execute(select(ProposalModel))
+    if result.scalars().first() is None:
+        for data in _DEFAULT_PROPOSALS:
+            proposal = ProposalModel(
+                titulo=data["titulo"],
+                descripcion=data["descripcion"],
+                costo=data["costo"],
+                area=data["area"],
+                municipio=data["municipio"],
+                status="approved",
+            )
+            session.add(proposal)
+        await session.commit()

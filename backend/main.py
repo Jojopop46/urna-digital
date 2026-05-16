@@ -23,6 +23,7 @@ from crypto.merkle_tree import MerkleTree
 from crypto.block_signer import AUDITOR_PUBLIC_KEY, verify_block_payload
 from routes import proposals, admin
 from services.admin_service import decode_token, seed_default_admin
+from services.proposal_service import seed_default_proposals
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 logger = logging.getLogger(__name__)
@@ -34,6 +35,7 @@ async def lifespan(app: FastAPI):
     await database.init_db()
     async with database.async_session() as session:
         await seed_default_admin(session)
+        await seed_default_proposals(session)
     await urna_chain.load_from_db()
     logger.info(f"Blockchain cargada: {len(urna_chain.chain)} bloques")
     yield
