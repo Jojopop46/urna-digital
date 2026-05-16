@@ -5,16 +5,19 @@ import logging
 from sqlalchemy import select
 from database import async_session
 from models import BlockModel
+from crypto.block_signer import sign_block_payload, AUDITOR_PUBLIC_KEY
 
 
 class Block:
-    def __init__(self, index, timestamp, data, previous_hash, nonce=0, hash=None):
+    def __init__(self, index, timestamp, data, previous_hash, nonce=0, hash=None, signature="", auditor_pubkey=""):
         self.index = index
         self.timestamp = timestamp
         self.data = data
         self.previous_hash = previous_hash
         self.nonce = nonce
         self.hash = hash or self.calculate_hash()
+        self.signature = signature
+        self.auditor_pubkey = auditor_pubkey or AUDITOR_PUBLIC_KEY
 
     def calculate_hash(self):
         block_string = json.dumps({
@@ -26,6 +29,21 @@ class Block:
         }, sort_keys=True).encode()
         return hashlib.sha256(block_string).hexdigest()
 
+    def payload_for_signing(self) -> str:
+        """JSON canónico usado para la firma Ed25519."""
+        return json.dumps({
+            "index": self.index,
+            "timestamp": self.timestamp,
+            "data": self.data,
+            "previous_hash": self.previous_hash,
+            "nonce": self.nonce,
+            "hash": self.hash
+        }, sort_keys=True)
+
+    def sign(self):
+        self.signature = sign_block_payload(self.payload_for_signing())
+        self.auditor_pubkey = AUDITOR_PUBLIC_KEY
+
     def to_dict(self):
         return {
             "index": self.index,
@@ -33,7 +51,9 @@ class Block:
             "data": self.data,
             "previous_hash": self.previous_hash,
             "nonce": self.nonce,
-            "hash": self.hash
+            "hash": self.hash,
+            "signature": self.signature,
+            "auditor_pubkey": self.auditor_pubkey,
         }
 
     @classmethod
@@ -44,7 +64,9 @@ class Block:
             data=model.data,
             previous_hash=model.previous_hash,
             nonce=model.nonce,
-            hash=model.hash
+            hash=model.hash,
+            signature=model.signature,
+            auditor_pubkey=model.auditor_pubkey,
         )
 
 
@@ -66,7 +88,9 @@ class Blockchain:
                 self.chain = [Block.from_model(b) for b in blocks]
 
     def create_genesis_block(self):
-        return Block(0, time(), "Bloque Genesis - Voz ciudadana", "0")
+        genesis = Block(0, time(), "Bloque Genesis - Voz ciudadana", "0")
+        genesis.sign()
+        return genesis
 
     def get_latest_block(self):
         return self.chain[-1]
@@ -80,6 +104,7 @@ class Blockchain:
             previous_hash=previous_block.hash
         )
         self.mine_block(new_block)
+        new_block.sign()
         async with async_session() as session:
             session.add(BlockModel(**new_block.to_dict()))
             await session.commit()
@@ -100,6 +125,16 @@ class Blockchain:
             if current_block.hash != current_block.calculate_hash():
                 return False
             if current_block.previous_hash != previous_block.hash:
+                return False
+        return True
+
+    def is_chain_signatures_valid(self) -> bool:
+        """Verifica que cada bloque tenga firma criptográfica válida del auditor."""
+        from crypto.block_signer import verify_block_payload
+        for block in self.chain:
+            if not block.signature:
+                return False
+            if not verify_block_payload(block.payload_for_signing(), block.signature, block.auditor_pubkey):
                 return False
         return True
 

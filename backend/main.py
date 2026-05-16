@@ -7,7 +7,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect, Depends, Request, status
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, validator, ConfigDict
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
@@ -20,6 +20,7 @@ from cache import set_nullifier, has_nullifier, set_merkle_cache, get_merkle_cac
 from blockchain import Blockchain
 from crypto.zk_commitment import generate_commitment, verify_commitment
 from crypto.merkle_tree import MerkleTree
+from crypto.block_signer import AUDITOR_PUBLIC_KEY, verify_block_payload
 from routes import proposals, admin
 from services.admin_service import decode_token, seed_default_admin
 
@@ -114,10 +115,10 @@ class BulkVerifyRequest(BaseModel):
     hashes: list[str] = Field(..., max_length=500)
 
 class CommitRequest(BaseModel):
+    model_config = ConfigDict(extra='ignore')
     process_id: str = Field(..., min_length=1, max_length=50, pattern=r"^[a-zA-Z0-9_]+$")
     vote_index: int = Field(..., ge=0)
     num_options: int = Field(..., gt=0)
-    identity_hash: str = Field(..., min_length=10, max_length=128, pattern=r"^[a-zA-Z0-9_]+$")
 
     @validator("vote_index")
     def vote_index_valid(cls, v, values):
@@ -195,19 +196,20 @@ async def health_check():
 @app.post("/api/v1/vote/commit", response_model=CommitResponse)
 @limiter.limit("5/minute")
 async def commit_vote(request: Request, body: CommitRequest):
-    existing = await has_nullifier(body.identity_hash)
+    zk = generate_commitment(body.vote_index, body.num_options)
+    existing = await has_nullifier(zk["nullifier"])
     if existing:
         raise HTTPException(status_code=409, detail="Voto ya emitido para este proceso.", headers={"X-Error-Code": "VOTE_ALREADY_CAST"})
 
-    zk = generate_commitment(body.vote_index, body.num_options)
-    await set_nullifier(body.identity_hash, ttl=3600 * 24)
+    await set_nullifier(zk["nullifier"], ttl=3600 * 24)
 
+    # Datos que se almacenan en la cadena: NUNCA incluyen identidad.
+    # El nullifier ZK evita doble voto sin revelar quién votó.
     vote_data = {
         "opcion_id": f"opt{body.vote_index + 1}",
         "commitment": zk["commitment"],
         "nullifier": zk["nullifier"],
         "process_id": body.process_id,
-        "identity_hash": body.identity_hash,
     }
     nuevo_bloque = await urna_chain.add_block(vote_data)
 
@@ -233,7 +235,12 @@ async def commit_vote(request: Request, body: CommitRequest):
 
 @app.get("/transparencia/chain")
 async def get_chain():
-    return {"length": len(urna_chain.chain), "chain": [b.to_dict() for b in urna_chain.chain]}
+    return {
+        "length": len(urna_chain.chain),
+        "chain": [b.to_dict() for b in urna_chain.chain],
+        "auditor_pubkey": AUDITOR_PUBLIC_KEY,
+        "signatures_valid": urna_chain.is_chain_signatures_valid()
+    }
 
 @app.get("/transparencia/export")
 async def export_chain(format: str = "json"):
@@ -256,6 +263,9 @@ async def verificar_voto(hash_recibo: str, process_id: str = "proceso_2025"):
     if not bloque:
         return {"status": "error", "encontrado": False, "message": "Voto no encontrado en la cadena"}
 
+    # Verificar firma del bloque antes de devolverlo
+    sig_valid = verify_block_payload(bloque.payload_for_signing(), bloque.signature, bloque.auditor_pubkey)
+
     merkle_data = await get_merkle_cache(process_id)
     proof = []
     is_valid = False
@@ -273,7 +283,11 @@ async def verificar_voto(hash_recibo: str, process_id: str = "proceso_2025"):
     return {
         "status": "success",
         "encontrado": True,
-        "block": bloque.to_dict(),
+        "block_hash": bloque.hash,
+        "block_index": bloque.index,
+        "block_timestamp": bloque.timestamp,
+        "signature_valid": sig_valid,
+        "auditor_pubkey": bloque.auditor_pubkey,
         "merkle_root": merkle_data["root"] if merkle_data else None,
         "proof": proof,
         "verified": is_valid,

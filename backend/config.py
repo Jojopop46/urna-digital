@@ -11,6 +11,7 @@ class Settings(BaseSettings):
     frontend_url: str = "http://localhost:3000"
     dev_mode: str = "0"
     rate_limit: str = "10/minute"
+    auditor_secret_key: str = ""
 
     class Config:
         env_file = ".env"

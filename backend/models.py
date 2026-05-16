@@ -15,6 +15,8 @@ class BlockModel(Base):
     previous_hash: Mapped[str] = mapped_column(String(64), nullable=False)
     nonce: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
     hash: Mapped[str] = mapped_column(String(64), unique=True, index=True, nullable=False)
+    signature: Mapped[str] = mapped_column(String(256), default="", nullable=False)
+    auditor_pubkey: Mapped[str] = mapped_column(String(256), default="", nullable=False)
 
 
 class ProposalModel(Base):
