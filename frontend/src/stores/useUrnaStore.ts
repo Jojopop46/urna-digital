@@ -17,7 +17,11 @@ export const useUrnaStore = defineStore('urna', () => {
   const seleccion = ref<number | null>(null)
   const tokenSesion = ref<string | null>(null)
   const expiresAt = ref<number | null>(null)
-  const props = ref<Proposal[]>([])
+  const props = ref<Proposal[]>([
+    { id: 1, titulo: 'Mejoramiento de alumbrado público en zonas rurales', descripcion: 'Instalación de luminarias LED solares en caminos rurales de difícil acceso para mejorar la seguridad nocturna y reducir accidentes.', costo: '$2,400,000 MXN', area: 'Infraestructura', municipio: 'Chihuahua', status: 'approved' },
+    { id: 2, titulo: 'Centro de salud digital para comunidades indígenas', descripcion: 'Telemedicina y consulta médica remota en comunidades rarámuri y tepehuana con conectividad satelital y personal capacitado.', costo: '$1,800,000 MXN', area: 'Salud', municipio: 'Guachochi', status: 'approved' },
+    { id: 3, titulo: 'Recolección de agua pluvial en escuelas primarias', descripcion: 'Sistemas de captación de agua de lluvia en 15 escuelas primarias rurales para garantizar abasto durante temporada de sequía.', costo: '$950,000 MXN', area: 'Educación', municipio: 'Cuauhtémoc', status: 'approved' },
+  ])
   const dl = ref('')
 
   const sesionActiva = computed(() => tokenSesion.value !== null && Date.now() < (expiresAt.value ?? 0))

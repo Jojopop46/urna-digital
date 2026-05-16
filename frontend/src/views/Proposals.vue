@@ -111,9 +111,11 @@ function statusLabel(status: string) {
 const loadAll = async () => {
   try {
     const data = await api.get('/api/v1/proposals?status=all');
-    s.props = data;
+    if (Array.isArray(data) && data.length > 0) {
+      s.props = data;
+    }
   } catch {
-    s.props = [];
+    // mantener datos demo si falla
   }
 };
 

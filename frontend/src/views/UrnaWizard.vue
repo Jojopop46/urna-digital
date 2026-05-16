@@ -485,9 +485,11 @@ onMounted(async () => {
   window.addEventListener('online', onOnline);
   try {
     const data = await api.get('/api/v1/proposals?status=approved');
-    store.props = data;
+    if (Array.isArray(data) && data.length > 0) {
+      store.props = data;
+    }
   } catch {
-    // mantener props vacías si falla
+    // mantener props demo si falla
   }
   // Focus inicial para lectores de pantalla
   nextTick(() => {
