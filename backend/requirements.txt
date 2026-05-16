@@ -7,4 +7,7 @@ pyjwt==2.8.0
 passlib[bcrypt]==1.7.4
 python-dotenv==1.0.1
 pydantic[email]==2.7.1
+pydantic-settings==2.2.1
 py_ecc==6.0.0
+slowapi==0.1.9
+gunicorn==22.0.0

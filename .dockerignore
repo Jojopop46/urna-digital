@@ -21,6 +21,21 @@ coverage.xml
 .pytest_cache
 .hypothesis
 
+# Entornos y secretos
+.env
+.env.*
+*.pem
+*.key
+*.crt
+
+# IDEs
+.vscode/
+.idea/
+
+# Tests
+backend/tests/
+test_*.py
+
 # No copiar el frontend (build context es la raíz del repo en Render)
 frontend/
 node_modules/

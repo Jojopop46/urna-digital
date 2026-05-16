@@ -64,41 +64,40 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useUrnaStore } from '../stores/useUrnaStore';
+import { api } from '../services/api';
 
 const s = useUrnaStore();
-const approved = computed(() => s.props.filter((x:any) => x.status==='approved'));
+const approved = computed(() => s.props.filter((x) => x.status==='approved'));
 const totalVotos = ref(0);
 const chainHeight = ref(1);
 
 const resultados = computed(() => {
-  return approved.value.map((p:any) => ({
+  return approved.value.map((p) => ({
     id: p.id,
     titulo: p.titulo,
-    votos: mockVotes(p.id)
+    votos: p.votos || 0
   }));
 });
 
-const mockVotes = (id:string) => {
-  const base = String(id).split('').reduce((a,c)=>a+c.charCodeAt(0),0) * 13 % 1000;
-  return base + Math.floor(Math.random() * 50);
-};
-
 const porcentaje = (votos:number) => {
-  const total = resultados.value.reduce((a:number, r:any) => a + r.votos, 0);
+  const total = resultados.value.reduce((a, r) => a + r.votos, 0);
   if (!total) return 0;
   return Math.round((votos / total) * 100);
 };
 
-let timer: number;
-onMounted(() => {
-  timer = window.setInterval(() => {
-    totalVotos.value += Math.floor(Math.random() * 3);
-    chainHeight.value += 1;
-  }, 8000);
+onMounted(async () => {
+  try {
+    const chain = await api.get('/transparencia/chain');
+    chainHeight.value = chain.length;
+    totalVotos.value = Math.max(0, chain.length - 1);
+    const proposals = await api.get('/api/v1/proposals?status=approved');
+    s.props = proposals.map((p: any) => ({ ...p, votos: 0 }));
+  } catch {
+    // mantener defaults
+  }
 });
-onUnmounted(() => clearInterval(timer));
 </script>
 
 <style scoped>

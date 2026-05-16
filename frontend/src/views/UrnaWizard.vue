@@ -208,8 +208,11 @@
 import { ref, computed, onMounted, onUnmounted, watch, nextTick } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useUrnaStore } from '../stores/useUrnaStore';
+import { useCryptoRandom } from '../composables/useCryptoRandom';
+import { api } from '../services/api';
 
 const { t } = useI18n();
+const { randomId } = useCryptoRandom();
 const store = useUrnaStore();
 const ine = ref('');
 const ineError = ref('');
@@ -232,7 +235,7 @@ const steps = [
   { labelKey: 'wizard.step4_label' }
 ];
 
-const opciones = computed(() => store.props.filter((p:any) => p.status === 'approved'));
+const opciones = computed(() => store.props.filter((p) => p.status === 'approved'));
 
 const opcionSeleccionada = computed(() =>
   opciones.value.find((o:any) => o.id === store.seleccion)
@@ -254,13 +257,15 @@ watch(() => store.paso, () => {
   });
 });
 
+const INE_REGEX = /^[A-Z]{6}\d{8}[A-Z]\d{3}$/;
+
 const validarIdentidad = () => {
   ineError.value = '';
-  if (ine.value.length !== 18) {
+  if (ine.value.length !== 18 || !INE_REGEX.test(ine.value)) {
     ineError.value = t('wizard.ine_error_length');
     return;
   }
-  store.tokenSesion = 'sesion_' + Math.random().toString(36).substring(7);
+  store.tokenSesion = randomId('sesion');
   store.expiresAt = Date.now() + 15 * 60 * 1000;
   store.resetTimer();
   store.paso = 2;
@@ -293,39 +298,24 @@ const emitirVoto = async () => {
   isSubmitting.value = true;
   networkError.value = false;
   try {
-    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
     const abort = new AbortController();
     const id = setTimeout(() => abort.abort(), 8000);
-    const res = await fetch(`${apiUrl}/api/v1/vote/commit`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        process_id: 'proceso_2025',
-        vote_index: opciones.value.findIndex((o:any) => o.id === store.seleccion),
-        num_options: opciones.value.length,
-        identity_hash: 'id_' + Math.random().toString(36).substring(2)
-      }),
-      signal: abort.signal
+    const data = await api.post('/api/v1/vote/commit', {
+      process_id: 'proceso_2025',
+      vote_index: opciones.value.findIndex((o) => o.id === store.seleccion),
+      num_options: opciones.value.length,
+      identity_hash: randomId('id')
     });
     clearTimeout(id);
-    if (res.ok) {
-      const data = await res.json();
-      recibo.value = data.block_hash || data.nullifier || data.receipt_token;
-    } else {
-      const res2 = await fetch(`${apiUrl}/urna/emitir`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ opcion_id: store.seleccion, token_sesion: store.tokenSesion })
-      });
-      if (!res2.ok) throw new Error();
-      recibo.value = (await res2.json()).recibo;
-    }
-  } catch {
-    recibo.value = 'SHA256-' + Math.random().toString(36).substring(2, 20).toUpperCase();
-  } finally {
-    store.paso = 4;
+    recibo.value = data.block_hash || data.nullifier || data.receipt_token;
+  } catch (e: any) {
+    networkError.value = true;
+    ineError.value = e.message || t('wizard.network_error');
     isSubmitting.value = false;
+    return;
   }
+  store.paso = 4;
+  isSubmitting.value = false;
 };
 
 const finalizar = () => {
@@ -353,9 +343,15 @@ const copiarRecibo = () => {
 const onOffline = () => { networkError.value = true; isOnline.value = false; };
 const onOnline = () => { networkError.value = false; isOnline.value = true; };
 
-onMounted(() => {
+onMounted(async () => {
   window.addEventListener('offline', onOffline);
   window.addEventListener('online', onOnline);
+  try {
+    const data = await api.get('/api/v1/proposals?status=approved');
+    store.props = data;
+  } catch {
+    // mantener props vacías si falla
+  }
 });
 
 onUnmounted(() => {

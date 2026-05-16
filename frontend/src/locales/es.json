@@ -63,6 +63,7 @@
     "ine_error_length": "La Clave de Elector debe tener 18 caracteres.",
     "captcha_label": "Verificación de seguridad",
     "captcha_desc": "Resuelve la suma para continuar",
+    "captcha_placeholder": "?",
     "validate_identity": "Validar Identidad",
     "continue": "Continuar",
     "back": "Atrás",

@@ -69,8 +69,8 @@
                 <span><span aria-hidden="true">💰</span> {{ p.costo }}</span>
               </div>
               <div class="proposal-actions">
-                <button @click="p.status='approved'" class="btn btn-primary btn-sm"><span aria-hidden="true">✓</span> {{ $t('admin.proposals.approve') }}</button>
-                <button @click="p.status='rejected'" class="btn btn-outline btn-sm" style="color:var(--danger);border-color:var(--panel-border);"><span aria-hidden="true">✕</span> {{ $t('admin.proposals.reject') }}</button>
+                <button @click="approveProposal(p.id)" class="btn btn-primary btn-sm"><span aria-hidden="true">✓</span> {{ $t('admin.proposals.approve') }}</button>
+                <button @click="rejectProposal(p.id)" class="btn btn-outline btn-sm" style="color:var(--danger);border-color:var(--panel-border);"><span aria-hidden="true">✕</span> {{ $t('admin.proposals.reject') }}</button>
               </div>
             </article>
           </transition-group>
@@ -89,9 +89,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useUrnaStore } from '../stores/useUrnaStore';
+import { api, setAdminToken, getAdminToken } from '../services/api';
 import LiveResultsChart from '../components/admin/LiveResultsChart.vue'
 
 const { t } = useI18n();
@@ -102,50 +103,72 @@ const newUser = ref('');
 const newPwd = ref('');
 const loginError = ref('');
 const pwdMsg = ref('');
-const auth = ref(localStorage.getItem('auth')==='1');
+const auth = ref(!!getAdminToken());
+const pending = ref<any[]>([]);
 
-let adminUsers = JSON.parse(localStorage.getItem('admin_users') || '[]');
-if (adminUsers.length === 0) {
-  adminUsers = [{ username: 'IEE1', password: '1234' }];
-  localStorage.setItem('admin_users', JSON.stringify(adminUsers));
-}
+const loadPending = async () => {
+  try {
+    pending.value = await api.get('/api/v1/proposals/pending');
+  } catch {
+    pending.value = [];
+  }
+};
 
-const pending = computed(() => s.props.filter((x:any) => x.status==='pending'));
-
-const login = () => {
+const login = async () => {
   loginError.value = '';
-  const users = JSON.parse(localStorage.getItem('admin_users') || '[]');
-  const validUser = users.find((u:any) => u.username === user.value && u.password === pwd.value);
-  if(validUser){
-    auth.value=true;
-    localStorage.setItem('auth','1');
-  } else {
+  try {
+    const data = await api.post('/api/v1/admin/login', { username: user.value, password: pwd.value });
+    setAdminToken(data.access_token);
+    auth.value = true;
+    await loadPending();
+  } catch {
     loginError.value = t('admin.login.error');
   }
 };
 
 const logout = () => {
+  setAdminToken(null);
   auth.value = false;
-  localStorage.removeItem('auth');
   user.value = '';
   pwd.value = '';
+  pending.value = [];
 };
 
-const createUser = () => {
-  if (newUser.value && newPwd.value.length >= 4) {
-    const users = JSON.parse(localStorage.getItem('admin_users') || '[]');
-    if (users.find((u:any) => u.username === newUser.value)) {
-      pwdMsg.value = t('admin.admins.error_exists');
-      return;
-    }
-    users.push({ username: newUser.value, password: newPwd.value });
-    localStorage.setItem('admin_users', JSON.stringify(users));
+const createUser = async () => {
+  if (!newUser.value || newPwd.value.length < 4) return;
+  pwdMsg.value = '';
+  try {
+    await api.post('/api/v1/admin/users', { username: newUser.value, password: newPwd.value });
     pwdMsg.value = t('admin.admins.success', { user: newUser.value });
     newUser.value = '';
     newPwd.value = '';
     setTimeout(() => pwdMsg.value = '', 4000);
+  } catch (e: any) {
+    pwdMsg.value = e.message || t('admin.admins.error_exists');
   }
 };
+
+const approveProposal = async (id: number) => {
+  try {
+    await api.patch(`/api/v1/proposals/${id}`, { status: 'approved' });
+    await loadPending();
+  } catch {
+    // ignorar
+  }
+};
+
+const rejectProposal = async (id: number) => {
+  try {
+    await api.patch(`/api/v1/proposals/${id}`, { status: 'rejected' });
+    await loadPending();
+  } catch {
+    // ignorar
+  }
+};
+
+onMounted(async () => {
+  if (auth.value) await loadPending();
+});
 </script>
 
 <style scoped>

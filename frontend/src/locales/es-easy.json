@@ -63,6 +63,7 @@
     "ine_error_length": "Debe tener 18 caracteres.",
     "captcha_label": "Verificación de seguridad",
     "captcha_desc": "Resuelve la suma para comprobar que eres humano:",
+    "captcha_placeholder": "?",
     "validate_identity": "Siguiente",
     "continue": "Siguiente",
     "back": "Atrás",

@@ -25,6 +25,7 @@
         </div>
       </div>
       <button class="btn btn-primary submit-btn" type="submit">{{ $t('proposals.form.submit') }}</button>
+      <p v-if="msg" class="form-msg" role="status">{{ msg }}</p>
     </form>
     <h2>{{ $t('proposals.list_title') }}</h2>
     <div class="approved-grid">
@@ -41,14 +42,38 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useUrnaStore } from '../stores/useUrnaStore';
+import { api } from '../services/api';
 const { t } = useI18n();
 const s = useUrnaStore();
 const f = ref({titulo:'',descripcion:'',costo:'',area:'',municipio:''});
-const approved = computed(() => s.props.filter((x:any) => x.status==='approved'));
-const addProp = () => { s.props.push({id:Date.now(), ...f.value, status:'pending'}); f.value={titulo:'',descripcion:'',costo:'',area:'',municipio:''}; alert(t('proposals.success')); };
+const msg = ref('');
+const approved = computed(() => s.props.filter((x) => x.status==='approved'));
+
+const loadApproved = async () => {
+  try {
+    const data = await api.get('/api/v1/proposals?status=approved');
+    s.props = data;
+  } catch {
+    s.props = [];
+  }
+};
+
+const addProp = async () => {
+  msg.value = '';
+  try {
+    await api.post('/api/v1/proposals', f.value);
+    f.value = {titulo:'',descripcion:'',costo:'',area:'',municipio:''};
+    msg.value = t('proposals.success');
+    await loadApproved();
+  } catch (e: any) {
+    msg.value = e.message || 'Error';
+  }
+};
+
+onMounted(loadApproved);
 </script>
 
 <style scoped>

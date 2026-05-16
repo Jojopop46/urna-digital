@@ -6,7 +6,7 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - VITE_API_URL=http://localhost:8000
+      - VITE_API_URL=${VITE_API_URL:-http://localhost:8000}
     restart: unless-stopped
 
   backend:
@@ -16,30 +16,48 @@ services:
     ports:
       - "8000:8000"
     environment:
-      - DATABASE_URL=postgresql://urna_user:urna_pass@db:5432/urna_chihuahua
-      - REDIS_URL=redis://redis:6379
-      - JWT_SECRET=super_secret_jwt_key
+      - DATABASE_URL=${DATABASE_URL}
+      - REDIS_URL=${REDIS_URL}
+      - JWT_SECRET=${JWT_SECRET}
+      - HMAC_SECRET=${HMAC_SECRET}
+      - PROCESS_SALT=${PROCESS_SALT}
+      - FRONTEND_URL=${FRONTEND_URL:-http://localhost:3000}
+      - DEV_MODE=${DEV_MODE:-0}
     depends_on:
       - db
       - redis
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
 
   db:
     image: postgres:16-alpine
     volumes:
       - postgres_data:/var/lib/postgresql/data
     environment:
-      - POSTGRES_USER=urna_user
-      - POSTGRES_PASSWORD=urna_pass
-      - POSTGRES_DB=urna_chihuahua
-    ports:
-      - "5432:5432"
+      - POSTGRES_USER=${POSTGRES_USER:-urna_user}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB:-urna_chihuahua}
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-urna_user} -d ${POSTGRES_DB:-urna_chihuahua}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   redis:
     image: redis:7-alpine
     command: redis-server --appendonly yes
-    ports:
-      - "6379:6379"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 volumes:
   postgres_data:

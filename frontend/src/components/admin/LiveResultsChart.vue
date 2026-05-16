@@ -82,6 +82,40 @@ function renderChart() {
   ariaLabel.value = data.value.map(d => `${d.option}: ${d.count} votos`).join(', ')
 }
 
+let reconnectAttempts = 0
+const MAX_RECONNECT = 5
+
+function connectWebSocket() {
+  const apiUrl = import.meta.env.VITE_API_URL || 'ws://localhost:8000'
+  const wsUrl = apiUrl.replace(/^http/, 'ws')
+  ws = new WebSocket(`${wsUrl}/ws/results/${props.processId}`)
+
+  ws.onmessage = (e) => {
+    try {
+      const payload = JSON.parse(e.data)
+      if (Array.isArray(payload)) {
+        data.value = payload
+        renderChart()
+        reconnectAttempts = 0
+      }
+    } catch {
+      // ignorar payload malformado
+    }
+  }
+
+  ws.onerror = () => {
+    // error silencioso, reconexión maneja el fallback
+  }
+
+  ws.onclose = () => {
+    if (reconnectAttempts < MAX_RECONNECT) {
+      reconnectAttempts++
+      const delay = Math.min(1000 * Math.pow(2, reconnectAttempts), 30000)
+      setTimeout(connectWebSocket, delay)
+    }
+  }
+}
+
 onMounted(() => {
   updateDimensions()
   resizeObserver = new ResizeObserver(() => {
@@ -89,14 +123,7 @@ onMounted(() => {
     renderChart()
   })
   if (wrapperRef.value) resizeObserver.observe(wrapperRef.value)
-
-  const apiUrl = import.meta.env.VITE_API_URL || 'ws://localhost:8000'
-  const wsUrl = apiUrl.replace(/^http/, 'ws')
-  ws = new WebSocket(`${wsUrl}/ws/results/${props.processId}`)
-  ws.onmessage = (e) => {
-    data.value = JSON.parse(e.data)
-    renderChart()
-  }
+  connectWebSocket()
 })
 
 onUnmounted(() => {

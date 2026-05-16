@@ -60,52 +60,39 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { api } from '../services/api';
 
 const { t } = useI18n();
 
 const hashInput = ref('');
 const loading = ref(false);
-const resultado = ref<{status: 'success'|'error'|'demo', titulo: string, mensaje: string} | null>(null);
+const resultado = ref<{status: 'success'|'error', titulo: string, mensaje: string} | null>(null);
 
 const verificar = async () => {
   loading.value = true;
   resultado.value = null;
-  const api_url = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
   try {
-    const response = await fetch(`${api_url}/transparencia/verificar/${hashInput.value}`);
-    if (response.ok) {
-      const data = await response.json();
-      if (data.encontrado) {
-        resultado.value = {
-          status: 'success',
-          titulo: t('verify.result.success.title'),
-          mensaje: t('verify.result.success.desc', { block: data.block.index })
-        };
-      } else {
-        resultado.value = {
-          status: 'error',
-          titulo: t('verify.result.error.title'),
-          mensaje: t('verify.result.error.desc')
-        };
-      }
-    } else {
-      throw new Error("API Error");
-    }
-  } catch (error) {
-    if (hashInput.value.length > 10) {
+    const data = await api.get(`/transparencia/verificar/${hashInput.value}`);
+    if (data.encontrado) {
       resultado.value = {
-        status: 'demo',
-        titulo: t('verify.result.demo.title'),
-        mensaje: t('verify.result.demo.desc')
+        status: 'success',
+        titulo: t('verify.result.success.title'),
+        mensaje: t('verify.result.success.desc', { block: data.block.index })
       };
     } else {
       resultado.value = {
         status: 'error',
-        titulo: t('verify.result.server_error.title'),
-        mensaje: t('verify.result.server_error.desc')
+        titulo: t('verify.result.error.title'),
+        mensaje: t('verify.result.error.desc')
       };
     }
+  } catch (e: any) {
+    resultado.value = {
+      status: 'error',
+      titulo: t('verify.result.server_error.title'),
+      mensaje: e.message || t('verify.result.server_error.desc')
+    };
   } finally {
     loading.value = false;
   }
