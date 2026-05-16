@@ -202,6 +202,19 @@
   "proposals": {
     "title": "Bürgervörschlääj",
     "success": "Vörschlo jeschickt!",
+    "filter_label": "Vörschlääj filtern",
+    "filters": {
+      "all": "Alle",
+      "pending": "Aussteehend",
+      "approved": "Genehmijt",
+      "rejected": "Ofjelehnt"
+    },
+    "status": {
+      "pending": "Aussteehend",
+      "approved": "Genehmijt",
+      "rejected": "Ofjelehnt"
+    },
+    "empty": "Kjeene Vörschlääj in dise Kategorie.",
     "form": {
       "title_label": "Titel",
       "desc_label": "Beschreibung",
@@ -210,7 +223,7 @@
       "municipio_label": "Gemeende",
       "submit": "Vörschlo jewe"
     },
-    "list_title": "Genehmijte Vörschlääj"
+    "list_title": "Alle Vörschlääj"
   },
   "language": {
     "select": "Sproch uutwählen",

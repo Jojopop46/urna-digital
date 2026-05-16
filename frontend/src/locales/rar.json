@@ -202,6 +202,19 @@
   "proposals": {
     "title": "Propuestas Ciudadanas",
     "success": "¡Propuesta enviada!",
+    "filter_label": "Filtrar propuestas",
+    "filters": {
+      "all": "Todas",
+      "pending": "Pendientes",
+      "approved": "Aprobadas",
+      "rejected": "Rechazadas"
+    },
+    "status": {
+      "pending": "Pendiente",
+      "approved": "Aprobada",
+      "rejected": "Rechazada"
+    },
+    "empty": "No hay propuestas en esta categoría.",
     "form": {
       "title_label": "Título",
       "desc_label": "Descripción",
@@ -210,7 +223,7 @@
       "municipio_label": "Municipio",
       "submit": "Enviar Propuesta"
     },
-    "list_title": "Propuestas Aprobadas"
+    "list_title": "Todas las Propuestas"
   },
   "language": {
     "select": "Seleccionar idioma",

@@ -4,9 +4,10 @@ from models import ProposalModel
 
 
 async def get_proposals(session: AsyncSession, status: str = "approved"):
-    result = await session.execute(
-        select(ProposalModel).where(ProposalModel.status == status).order_by(ProposalModel.id)
-    )
+    query = select(ProposalModel).order_by(ProposalModel.id)
+    if status != "all":
+        query = query.where(ProposalModel.status == status)
+    result = await session.execute(query)
     return result.scalars().all()
 
 
