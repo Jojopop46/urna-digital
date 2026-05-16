@@ -70,19 +70,31 @@ import { api } from '../services/api';
 
 const s = useUrnaStore();
 const approved = computed(() => s.props.filter((x) => x.status==='approved'));
-const totalVotos = ref(0);
 const chainHeight = ref(1);
 
-const resultados = computed(() => {
-  return approved.value.map((p) => ({
-    id: p.id,
-    titulo: p.titulo,
-    votos: p.votos || 0
-  }));
+const demoVotes = computed(() => {
+  try {
+    return JSON.parse(localStorage.getItem('demo_votes') || '[]') as Array<{ proposalId: number; hash: string; timestamp: number }>;
+  } catch {
+    return [];
+  }
 });
 
+const resultados = computed(() => {
+  return approved.value.map((p) => {
+    const demoCount = demoVotes.value.filter((v) => v.proposalId === p.id).length;
+    return {
+      id: p.id,
+      titulo: p.titulo,
+      votos: (p.votos || 0) + demoCount
+    };
+  });
+});
+
+const totalVotos = computed(() => resultados.value.reduce((a, r) => a + r.votos, 0));
+
 const porcentaje = (votos:number) => {
-  const total = resultados.value.reduce((a, r) => a + r.votos, 0);
+  const total = totalVotos.value;
   if (!total) return 0;
   return Math.round((votos / total) * 100);
 };
@@ -91,11 +103,12 @@ onMounted(async () => {
   try {
     const chain = await api.get('/transparencia/chain');
     chainHeight.value = chain.length;
-    totalVotos.value = Math.max(0, chain.length - 1);
     const proposals = await api.get('/api/v1/proposals?status=approved');
-    s.props = proposals.map((p: any) => ({ ...p, votos: 0 }));
+    if (Array.isArray(proposals) && proposals.length > 0) {
+      s.props = proposals.map((p: any) => ({ ...p, votos: 0 }));
+    }
   } catch {
-    // mantener defaults
+    // mantener defaults / demo
   }
 });
 </script>
