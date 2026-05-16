@@ -13,8 +13,6 @@ from crypto.merkle_tree import MerkleTree
 
 app = FastAPI(title="Urna Digital API")
 
-import os
-
 origins = [os.getenv("FRONTEND_URL", "http://localhost:3000")]
 if os.getenv("DEV_MODE") == "1":
     origins.append("http://localhost:5173")
