@@ -24,12 +24,12 @@ services:
     healthCheckPath: /health
     plan: free
 
+  - type: redis
+    name: urna-digital-redis
+    plan: free
+    ipAllowList: []
+
 databases:
   - name: urna-digital-db
     plan: free
     postgresMajorVersion: 16
-
-redis:
-  - name: urna-digital-redis
-    plan: free
-    ipAllowList: []
