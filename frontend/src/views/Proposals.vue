@@ -70,10 +70,17 @@ import { api } from '../services/api';
 const { t } = useI18n();
 const s = useUrnaStore();
 const f = ref({ titulo: '', descripcion: '', costo: '', area: '', municipio: '' });
-const msg = ref('');
-const filter = ref<'all' | 'pending' | 'approved' | 'rejected'>('all');
+type StatusFilter = 'all' | 'pending' | 'approved' | 'rejected';
 
-const filterOptions = computed(() => [
+const msg = ref('');
+const filter = ref<StatusFilter>('all');
+
+interface FilterOption {
+  value: StatusFilter;
+  label: string;
+}
+
+const filterOptions = computed<FilterOption[]>(() => [
   { value: 'all', label: t('proposals.filters.all') },
   { value: 'pending', label: t('proposals.filters.pending') },
   { value: 'approved', label: t('proposals.filters.approved') },
@@ -85,7 +92,7 @@ const filtered = computed(() => {
   return s.props.filter((x) => x.status === filter.value);
 });
 
-const counts = computed(() => ({
+const counts = computed<Record<StatusFilter, number>>(() => ({
   all: s.props.length,
   pending: s.props.filter((x) => x.status === 'pending').length,
   approved: s.props.filter((x) => x.status === 'approved').length,
