@@ -4,11 +4,14 @@
       v-for="lang in langs"
       :key="lang.code"
       :aria-pressed="locale === lang.code"
+      :aria-label="lang.name"
       @click="setLang(lang.code)"
       :class="['lang-btn', { active: locale === lang.code }]"
       :title="lang.name"
     >
-      {{ lang.flag }} {{ lang.label }}
+      <span aria-hidden="true">{{ lang.flag }}</span>
+      <span class="sr-only">{{ lang.name }}</span>
+      <span aria-hidden="true">{{ lang.label }}</span>
     </button>
   </div>
 </template>
@@ -55,6 +58,17 @@ const setLang = (code: string) => {
 .lang-btn:hover:not(.active) {
   background: var(--bg-color);
   color: var(--text-main);
+}
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
 }
 @media (max-width: 768px) {
   .lang-switcher { justify-content: center; }

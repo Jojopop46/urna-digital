@@ -152,7 +152,7 @@ async def commit_vote(body: CommitRequest):
     # 1. Verificar que el nullifier no exista (previene doble voto)
     existing = nullifier_store.get(body.identity_hash)
     if existing:
-        raise HTTPException(status_code=409, detail="Voto ya emitido para este proceso.")
+        raise HTTPException(status_code=409, detail="Voto ya emitido para este proceso.", headers={"X-Error-Code": "VOTE_ALREADY_CAST"})
 
     # 2. Generar commitment ZK
     zk = generate_commitment(body.vote_index, body.num_options)
@@ -289,7 +289,7 @@ def verificar_voto(hash_recibo: str, process_id: str = "proceso_2025"):
 @app.post("/transparencia/verificar/bulk")
 def verificar_bulk(req: BulkVerifyRequest):
     if len(req.hashes) > 500:
-        raise HTTPException(status_code=400, detail="Too many hashes (max 500)")
+        raise HTTPException(status_code=400, detail="Demasiados hashes (máximo 500).", headers={"X-Error-Code": "TOO_MANY_HASHES"})
     resultados = []
     for h in req.hashes:
         bloque = urna_chain.find_vote_by_hash(h)

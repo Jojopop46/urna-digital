@@ -1,25 +1,25 @@
 <template>
-  <a href="#main-content" class="skip-link">Saltar al contenido principal</a>
+  <a href="#main-content" class="skip-link">{{ $t('a11y.skip_to_content') || 'Saltar al contenido principal' }}</a>
   <NetworkStatus />
-  <nav class="nav-bar" :class="{ 'nav-open': menuOpen }">
+  <nav class="nav-bar" :class="{ 'nav-open': menuOpen }" :aria-label="$t('a11y.menu')">
     <router-link to="/" class="logo">
-      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/></svg>
+      <svg aria-hidden="true" focusable="false" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/></svg>
       <span class="logo-text">Urna Digital</span>
     </router-link>
-    <button class="menu-toggle" @click="menuOpen = !menuOpen" :aria-expanded="menuOpen" :aria-label="menuOpen ? 'Cerrar menú' : 'Abrir menú'">
-      <svg v-if="!menuOpen" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg>
-      <svg v-else width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    <button ref="menuToggleRef" class="menu-toggle" @click="toggleMenu" :aria-expanded="menuOpen" :aria-label="menuOpen ? $t('a11y.close_menu') : $t('a11y.open_menu')">
+      <svg v-if="!menuOpen" aria-hidden="true" focusable="false" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg>
+      <svg v-else aria-hidden="true" focusable="false" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
     </button>
-    <div class="nav-links" :class="{ open: menuOpen }">
-      <router-link to="/" @click="menuOpen = false">{{ $t('nav.home') }}</router-link>
-      <router-link to="/transparencia" @click="menuOpen = false">{{ $t('nav.transparency') }}</router-link>
-      <router-link to="/verificar" @click="menuOpen = false">{{ $t('nav.verify') }}</router-link>
+    <div ref="navLinksRef" class="nav-links" :class="{ open: menuOpen }">
+      <router-link ref="firstLinkRef" to="/" @click="closeMenu">{{ $t('nav.home') }}</router-link>
+      <router-link to="/transparencia" @click="closeMenu">{{ $t('nav.transparency') }}</router-link>
+      <router-link to="/verificar" @click="closeMenu">{{ $t('nav.verify') }}</router-link>
       <LanguageSwitcher />
-      <button @click="toggleTheme" class="theme-toggle" :aria-label="theme==='light' ? 'Activar modo oscuro' : 'Activar modo claro'" title="Cambiar tema">
-        <svg v-if="theme === 'light'" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
-        <svg v-else width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/></svg>
+      <button @click="toggleTheme" class="theme-toggle" :aria-label="theme==='light' ? $t('a11y.dark_mode') : $t('a11y.light_mode')" :title="$t('a11y.dark_mode') + ' / ' + $t('a11y.light_mode')">
+        <svg v-if="theme === 'light'" aria-hidden="true" focusable="false" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+        <svg v-else aria-hidden="true" focusable="false" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/></svg>
       </button>
-      <router-link to="/urna" class="btn btn-primary nav-vote" @click="menuOpen = false">{{ $t('nav.vote') }}</router-link>
+      <router-link to="/urna" class="btn btn-primary nav-vote" @click="closeMenu">{{ $t('nav.vote') }}</router-link>
     </div>
   </nav>
 
@@ -33,17 +33,31 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, nextTick } from 'vue';
 import NetworkStatus from './components/NetworkStatus.vue'
 import LanguageSwitcher from './components/LanguageSwitcher.vue'
 
 const theme = ref(localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'));
 const menuOpen = ref(false);
+const firstLinkRef = ref<HTMLAnchorElement | null>(null);
 
 const toggleTheme = () => {
   theme.value = theme.value === 'light' ? 'dark' : 'light';
   localStorage.setItem('theme', theme.value);
   document.documentElement.setAttribute('data-theme', theme.value);
+};
+
+const toggleMenu = () => {
+  menuOpen.value = !menuOpen.value;
+  if (menuOpen.value) {
+    nextTick(() => {
+      firstLinkRef.value?.focus();
+    });
+  }
+};
+
+const closeMenu = () => {
+  menuOpen.value = false;
 };
 
 onMounted(() => {

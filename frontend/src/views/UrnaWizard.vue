@@ -3,22 +3,27 @@
     <!-- Error de red -->
     <Transition name="slide-down">
       <div v-if="networkError" role="alert" class="alert-banner alert-danger">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <svg aria-hidden="true" focusable="false" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
         {{ $t('wizard.network_error') }}
       </div>
     </Transition>
 
+    <!-- Live region para anuncios de paso -->
+    <div class="sr-only" aria-live="polite" aria-atomic="true">{{ stepAnnouncement }}</div>
+    <div class="sr-only" aria-live="polite" aria-atomic="true">{{ copyAnnouncement }}</div>
+
     <!-- Progress -->
-    <div class="progress-bar" role="progressbar" :aria-valuenow="store.paso" aria-valuemin="1" aria-valuemax="4" aria-label="Progreso de votación">
+    <div class="progress-bar" role="progressbar" :aria-valuenow="store.paso" aria-valuemin="1" aria-valuemax="4" :aria-label="$t('wizard.progress_label')">
       <div class="progress-fill" :style="{ width: ((store.paso / 4) * 100) + '%' }"></div>
     </div>
 
-    <nav class="wizard-progress" aria-label="Pasos del proceso de votación">
+    <nav class="wizard-progress" :aria-label="$t('a11y.step_x_of_y', { step: store.paso, total: 4, label: $t(steps[store.paso - 1]?.labelKey || '') })">
       <ol>
         <li
           v-for="(step, i) in steps"
           :key="i"
           :class="{ active: store.paso === (i + 1), completed: store.paso > (i + 1) }"
+          :aria-current="store.paso === (i + 1) ? 'step' : undefined"
         >
           <span class="step-bubble">{{ i + 1 }}</span>
           <span class="step-label">{{ $t(step.labelKey) }}</span>
@@ -30,9 +35,9 @@
       <!-- Paso 1: Identidad -->
       <div v-if="store.paso === 1" class="step-content">
         <div class="step-header">
-          <div class="step-icon">🪪</div>
-          <h2>{{ $t('wizard.step1_title') }}</h2>
-          <p class="step-desc">Ingresa tu credencial de elector para verificar que eres ciudadano de Chihuahua.</p>
+          <div class="step-icon" aria-hidden="true">🪪</div>
+          <h2 ref="stepTitleRef" tabindex="-1">{{ $t('wizard.step1_title') }}</h2>
+          <p class="step-desc">{{ $t('wizard.step_desc.1') }}</p>
         </div>
 
         <div class="form-group">
@@ -50,55 +55,64 @@
             @keyup.enter="validarIdentidad"
           />
           <p v-if="ineError" id="ine-error" class="error-msg" role="alert">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <svg aria-hidden="true" focusable="false" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
             {{ ineError }}
           </p>
         </div>
 
         <div class="captcha-box">
-          <label>Verificación de seguridad</label>
-          <p class="captcha-desc">Resuelve la suma para continuar</p>
+          <span class="captcha-label">{{ $t('wizard.captcha_label') }}</span>
+          <p class="captcha-desc">{{ $t('wizard.captcha_desc') }}</p>
           <div class="captcha-row">
-            <div class="captcha-challenge">{{ captchaA }} + {{ captchaB }}</div>
-            <span class="captcha-eq">=</span>
-            <input type="number" v-model="captchaInput" class="form-input captcha-input" placeholder="?" />
-            <span v-if="captchaInput && captchaValido" class="captcha-check">✓</span>
+            <div class="captcha-challenge" aria-hidden="true">{{ captchaA }} + {{ captchaB }}</div>
+            <span class="captcha-eq" aria-hidden="true">=</span>
+            <input
+              type="number"
+              v-model="captchaInput"
+              class="form-input captcha-input"
+              :placeholder="$t('wizard.captcha_placeholder') || '?'"
+              :aria-label="$t('wizard.captcha_desc')"
+            />
+            <span v-if="captchaInput && captchaValido" class="captcha-check" aria-hidden="true">✓</span>
           </div>
         </div>
 
         <button class="btn btn-primary w-full" @click="validarIdentidad" :disabled="!captchaValido || ine.length !== 18">
           {{ $t('wizard.validate_identity') }}
-          <svg v-if="isSubmitting" class="spinner" width="16" height="16" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none" stroke-dasharray="31.4 31.4" transform="rotate(-90 12 12)"><animateTransform attributeName="transform" type="rotate" from="0 12 12" to="360 12 12" dur="1s" repeatCount="indefinite"/></circle></svg>
+          <svg v-if="isSubmitting" class="spinner" aria-hidden="true" focusable="false" width="16" height="16" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none" stroke-dasharray="31.4 31.4" transform="rotate(-90 12 12)"><animateTransform attributeName="transform" type="rotate" from="0 12 12" to="360 12 12" dur="1s" repeatCount="indefinite"/></circle></svg>
         </button>
       </div>
 
       <!-- Paso 2: Selección -->
       <div v-else-if="store.paso === 2" class="step-content">
         <div class="step-header">
-          <div class="step-icon">📋</div>
-          <h2>{{ $t('wizard.step2_title') }}</h2>
-          <p class="step-desc">Selecciona una propuesta ciudadana. Puedes cambiar antes de confirmar.</p>
+          <div class="step-icon" aria-hidden="true">📋</div>
+          <h2 ref="stepTitleRef" tabindex="-1">{{ $t('wizard.step2_title') }}</h2>
+          <p class="step-desc">{{ $t('wizard.step_desc.2') }}</p>
         </div>
 
-        <div class="options-list" role="radiogroup" aria-label="Opciones de votación">
+        <div class="options-list" role="radiogroup" :aria-label="$t('wizard.step2_title')">
           <button
-            v-for="opcion in opciones"
+            v-for="(opcion, idx) in opciones"
             :key="opcion.id"
+            ref="optionRefs"
             class="option-card"
             :class="{ active: store.seleccion === opcion.id }"
             role="radio"
             :aria-checked="store.seleccion === opcion.id"
             @click="store.seleccion = opcion.id"
+            @keydown="handleOptionKeydown($event, idx)"
+            :tabindex="store.seleccion === opcion.id ? 0 : -1"
           >
             <div class="option-check">
-              <div class="option-check-inner" v-if="store.seleccion === opcion.id">✓</div>
+              <div class="option-check-inner" v-if="store.seleccion === opcion.id" aria-hidden="true">✓</div>
             </div>
             <div class="option-body">
               <h3>{{ opcion.titulo }}</h3>
               <p class="option-desc">{{ opcion.descripcion }}</p>
               <div class="option-meta">
-                <span class="meta-tag"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg> {{ opcion.municipio }}</span>
-                <span class="meta-tag"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M2 12h20"/></svg> {{ opcion.area }}</span>
+                <span class="meta-tag"><svg aria-hidden="true" focusable="false" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg> {{ opcion.municipio }}</span>
+                <span class="meta-tag"><svg aria-hidden="true" focusable="false" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M2 12h20"/></svg> {{ opcion.area }}</span>
                 <span class="meta-tag cost">{{ opcion.costo }}</span>
               </div>
             </div>
@@ -106,10 +120,10 @@
         </div>
 
         <div class="actions-row">
-          <button class="btn btn-outline" @click="store.paso = 1">← {{ $t('wizard.back') }}</button>
-          <button class="btn btn-primary" :disabled="!store.seleccion" @click="store.paso = 3">
+          <button class="btn btn-outline" @click="goToStep(1)">← {{ $t('wizard.back') }}</button>
+          <button class="btn btn-primary" :disabled="!store.seleccion" @click="goToStep(3)">
             {{ $t('wizard.continue') }}
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            <svg aria-hidden="true" focusable="false" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
           </button>
         </div>
       </div>
@@ -117,40 +131,40 @@
       <!-- Paso 3: Confirmación -->
       <div v-else-if="store.paso === 3" class="step-content">
         <div class="step-header">
-          <div class="step-icon">⚠️</div>
-          <h2>{{ $t('wizard.step3_title') }}</h2>
-          <p class="step-desc">Revisa tu selección. Una vez emitido, no podrás cambiar tu voto.</p>
+          <div class="step-icon" aria-hidden="true">⚠️</div>
+          <h2 ref="stepTitleRef" tabindex="-1">{{ $t('wizard.step3_title') }}</h2>
+          <p class="step-desc">{{ $t('wizard.step_desc.3') }}</p>
         </div>
 
         <div class="confirm-box" v-if="opcionSeleccionada">
           <div class="confirm-option">
-            <span class="confirm-label">Has seleccionado</span>
+            <span class="confirm-label">{{ $t('wizard.step3_title') }}</span>
             <h3 class="confirm-title">{{ opcionSeleccionada.titulo }}</h3>
             <p class="confirm-desc">{{ opcionSeleccionada.descripcion }}</p>
             <div class="confirm-meta">
               <span>{{ opcionSeleccionada.municipio }}</span>
-              <span>·</span>
+              <span aria-hidden="true">·</span>
               <span>{{ opcionSeleccionada.area }}</span>
-              <span>·</span>
+              <span aria-hidden="true">·</span>
               <span class="cost">{{ opcionSeleccionada.costo }}</span>
             </div>
           </div>
           <div class="confirm-warning">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <svg aria-hidden="true" focusable="false" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
             {{ $t('wizard.review_warning') }}
           </div>
         </div>
 
         <div class="actions-row">
-          <button class="btn btn-outline" @click="store.paso = 2">← {{ $t('wizard.change_vote') }}</button>
+          <button class="btn btn-outline" @click="goToStep(2)">← {{ $t('wizard.change_vote') }}</button>
           <button class="btn btn-primary" @click="emitirVoto" :disabled="isSubmitting || !isOnline" :aria-label="$t('wizard.confirm_emit_aria')">
             {{ isSubmitting ? $t('wizard.emitting') : $t('wizard.confirm_and_emit') }}
-            <svg v-if="isSubmitting" class="spinner" width="16" height="16" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none" stroke-dasharray="31.4 31.4" transform="rotate(-90 12 12)"><animateTransform attributeName="transform" type="rotate" from="0 12 12" to="360 12 12" dur="1s" repeatCount="indefinite"/></circle></svg>
+            <svg v-if="isSubmitting" class="spinner" aria-hidden="true" focusable="false" width="16" height="16" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none" stroke-dasharray="31.4 31.4" transform="rotate(-90 12 12)"><animateTransform attributeName="transform" type="rotate" from="0 12 12" to="360 12 12" dur="1s" repeatCount="indefinite"/></circle></svg>
           </button>
         </div>
         <p v-if="!isOnline" class="offline-msg" role="alert">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
-          Necesitas conexión a internet para emitir tu voto
+          <svg aria-hidden="true" focusable="false" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+          {{ $t('wizard.offline_msg') }}
         </p>
       </div>
 
@@ -158,9 +172,9 @@
       <div v-else-if="store.paso === 4" class="step-content">
         <div class="receipt-success">
           <div class="success-ring">
-            <div class="success-icon">✓</div>
+            <div class="success-icon" aria-hidden="true">✓</div>
           </div>
-          <h2>{{ $t('wizard.success_title') }}</h2>
+          <h2 ref="stepTitleRef" tabindex="-1">{{ $t('wizard.success_title') }}</h2>
           <p class="receipt-desc">{{ $t('wizard.success_desc') }}</p>
         </div>
 
@@ -168,21 +182,21 @@
           <label>{{ $t('wizard.receipt_hash') }}</label>
           <div class="receipt-hash">
             <code>{{ recibo }}</code>
-            <button class="copy-btn" @click="copiarRecibo" title="Copiar hash">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            <button class="copy-btn" @click="copiarRecibo" :aria-label="$t('a11y.copy_hash')">
+              <svg aria-hidden="true" focusable="false" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
             </button>
           </div>
-          <p class="receipt-hint">Guarda este código. Puedes verificar tu voto en cualquier momento.</p>
+          <p class="receipt-hint">{{ $t('wizard.receipt_hint') }}</p>
         </div>
 
         <div class="actions-row center">
           <button class="btn btn-outline" @click="descargarComprobante">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            <svg aria-hidden="true" focusable="false" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
             {{ $t('wizard.download_receipt') }}
           </button>
           <button class="btn btn-primary" @click="finalizar">
             {{ $t('wizard.finish') }}
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+            <svg aria-hidden="true" focusable="false" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
           </button>
         </div>
       </div>
@@ -191,9 +205,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from 'vue';
+import { ref, computed, onMounted, onUnmounted, watch, nextTick } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useUrnaStore } from '../stores/useUrnaStore';
 
+const { t } = useI18n();
 const store = useUrnaStore();
 const ine = ref('');
 const ineError = ref('');
@@ -205,6 +221,9 @@ const isSubmitting = ref(false);
 const recibo = ref('');
 const networkError = ref(false);
 const isOnline = ref(navigator.onLine);
+const stepTitleRef = ref<HTMLHeadingElement | null>(null);
+const optionRefs = ref<HTMLButtonElement[]>([]);
+const copyAnnouncement = ref('');
 
 const steps = [
   { labelKey: 'wizard.step1_label' },
@@ -219,16 +238,54 @@ const opcionSeleccionada = computed(() =>
   opciones.value.find((o:any) => o.id === store.seleccion)
 );
 
+const stepAnnouncement = computed(() => {
+  const step = store.paso;
+  const label = t(steps[step - 1]?.labelKey || '');
+  return t('a11y.step_x_of_y', { step, total: 4, label });
+});
+
+const goToStep = (step: number) => {
+  store.paso = step;
+};
+
+watch(() => store.paso, () => {
+  nextTick(() => {
+    stepTitleRef.value?.focus();
+  });
+});
+
 const validarIdentidad = () => {
   ineError.value = '';
   if (ine.value.length !== 18) {
-    ineError.value = 'La Clave de Elector debe tener 18 caracteres.';
+    ineError.value = t('wizard.ine_error_length');
     return;
   }
   store.tokenSesion = 'sesion_' + Math.random().toString(36).substring(7);
   store.expiresAt = Date.now() + 15 * 60 * 1000;
   store.resetTimer();
   store.paso = 2;
+};
+
+const handleOptionKeydown = (event: KeyboardEvent, idx: number) => {
+  const opts = opciones.value;
+  if (!opts.length) return;
+  let nextIdx = idx;
+  if (event.key === 'ArrowDown' || event.key === 'ArrowRight') {
+    event.preventDefault();
+    nextIdx = (idx + 1) % opts.length;
+  } else if (event.key === 'ArrowUp' || event.key === 'ArrowLeft') {
+    event.preventDefault();
+    nextIdx = (idx - 1 + opts.length) % opts.length;
+  } else if (event.key === ' ') {
+    event.preventDefault();
+    store.seleccion = opts[idx].id;
+  }
+  if (nextIdx !== idx) {
+    store.seleccion = opts[nextIdx].id;
+    nextTick(() => {
+      optionRefs.value[nextIdx]?.focus();
+    });
+  }
 };
 
 const emitirVoto = async () => {
@@ -289,6 +346,8 @@ const descargarComprobante = () => {
 
 const copiarRecibo = () => {
   navigator.clipboard.writeText(recibo.value);
+  copyAnnouncement.value = t('a11y.hash_copied');
+  setTimeout(() => { copyAnnouncement.value = ''; }, 2000);
 };
 
 const onOffline = () => { networkError.value = true; isOnline.value = false; };
@@ -465,7 +524,7 @@ onUnmounted(() => {
   margin-bottom: 1.5rem;
   text-align: center;
 }
-.captcha-box label {
+.captcha-label {
   font-weight: 700;
   display: block;
   margin-bottom: 0.25rem;
@@ -775,5 +834,17 @@ onUnmounted(() => {
   padding-bottom: 0;
   opacity: 0;
   overflow: hidden;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
 }
 </style>

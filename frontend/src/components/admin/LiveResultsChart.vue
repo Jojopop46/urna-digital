@@ -1,8 +1,8 @@
 <template>
   <div class="chart-wrapper" ref="wrapperRef">
     <div class="chart-container" :aria-label="$t('transparency.live_chart')">
-      <h2>Resultados en vivo — Proceso {{ processId }}</h2>
-      <svg ref="svgRef" :width="width" :height="height" role="img" :aria-label="ariaLabel" />
+      <h2>{{ $t('transparency.live_chart') }} — Proceso {{ processId }}</h2>
+      <svg ref="svgRef" :width="width" :height="height" role="img" :aria-label="ariaLabel" aria-hidden="false" />
       <p class="sr-only" aria-live="polite">{{ ariaLabel }}</p>
     </div>
   </div>

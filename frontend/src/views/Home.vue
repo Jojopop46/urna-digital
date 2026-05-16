@@ -1,14 +1,14 @@
 <template>
   <div class="home">
     <!-- Hero -->
-    <section class="hero-section">
+    <section class="hero-section" aria-labelledby="home-title">
       <div class="glass-panel hero-card">
-        <div class="hero-badge">🔒 Seguro · Transparente · Accesible</div>
-        <h1>{{ $t('home.title') }}</h1>
+        <div class="hero-badge"><span aria-hidden="true">🔒</span> {{ $t('home.badge') }}</div>
+        <h1 id="home-title">{{ $t('home.title') }}</h1>
         <p class="hero-subtitle">{{ $t('home.subtitle') }}</p>
         <div class="hero-actions">
           <router-link to="/urna" class="btn btn-primary hero-btn">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            <svg aria-hidden="true" focusable="false" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
             {{ $t('home.vote') }}
           </router-link>
           <router-link to="/transparencia" class="btn btn-outline hero-btn">
@@ -19,62 +19,63 @@
     </section>
 
     <!-- Features -->
-    <section class="features-section">
+    <section class="features-section" aria-labelledby="features-title">
+      <h2 id="features-title" class="sr-only">{{ $t('home.features.anonymous.title') }}, {{ $t('home.features.transparent.title') }}, {{ $t('home.features.offline.title') }}</h2>
       <div class="features-grid">
         <div class="glass-panel feature-card">
-          <div class="feature-icon" style="background: var(--primary-light); color: var(--primary);">🔐</div>
-          <h3>Voto Anónimo</h3>
-          <p>Tu identidad está protegida con tecnología de conocimiento cero. Nadie puede vincular tu voto contigo.</p>
+          <div class="feature-icon" style="background: var(--primary-light); color: var(--primary);"><span aria-hidden="true">🔐</span></div>
+          <h3>{{ $t('home.features.anonymous.title') }}</h3>
+          <p>{{ $t('home.features.anonymous.desc') }}</p>
         </div>
         <div class="glass-panel feature-card">
-          <div class="feature-icon" style="background: var(--secondary-light); color: var(--secondary);">🌐</div>
-          <h3>Transparencia Total</h3>
-          <p>Cada voto se registra en una blockchain pública auditable. Puedes verificar tu voto cuando quieras.</p>
+          <div class="feature-icon" style="background: var(--secondary-light); color: var(--secondary);"><span aria-hidden="true">🌐</span></div>
+          <h3>{{ $t('home.features.transparent.title') }}</h3>
+          <p>{{ $t('home.features.transparent.desc') }}</p>
         </div>
         <div class="glass-panel feature-card">
-          <div class="feature-icon" style="background: var(--warning-light); color: var(--warning);">📱</div>
-          <h3>Funciona Sin Internet</h3>
-          <p>En zonas rurales puedes preparar tu voto offline y emitirlo cuando recuperes conexión.</p>
+          <div class="feature-icon" style="background: var(--warning-light); color: var(--warning);"><span aria-hidden="true">📱</span></div>
+          <h3>{{ $t('home.features.offline.title') }}</h3>
+          <p>{{ $t('home.features.offline.desc') }}</p>
         </div>
       </div>
     </section>
 
     <!-- How it works -->
-    <section class="how-section">
-      <h2 class="section-title">¿Cómo funciona?</h2>
+    <section class="how-section" aria-labelledby="how-title">
+      <h2 id="how-title" class="section-title">{{ $t('home.how_it_works.title') }}</h2>
       <div class="steps-row">
         <div class="step-item">
           <div class="step-num">1</div>
-          <h4>Identifícate</h4>
-          <p>Ingresa tu CURP y resuelve el CAPTCHA</p>
+          <h4>{{ $t('home.how_it_works.steps.1.title') }}</h4>
+          <p>{{ $t('home.how_it_works.steps.1.desc') }}</p>
         </div>
-        <div class="step-arrow">→</div>
+        <div class="step-arrow" aria-hidden="true">→</div>
         <div class="step-item">
           <div class="step-num">2</div>
-          <h4>Elige</h4>
-          <p>Selecciona la propuesta que más te convenga</p>
+          <h4>{{ $t('home.how_it_works.steps.2.title') }}</h4>
+          <p>{{ $t('home.how_it_works.steps.2.desc') }}</p>
         </div>
-        <div class="step-arrow">→</div>
+        <div class="step-arrow" aria-hidden="true">→</div>
         <div class="step-item">
           <div class="step-num">3</div>
-          <h4>Confirma</h4>
-          <p>Revisa tu selección y emite tu voto</p>
+          <h4>{{ $t('home.how_it_works.steps.3.title') }}</h4>
+          <p>{{ $t('home.how_it_works.steps.3.desc') }}</p>
         </div>
-        <div class="step-arrow">→</div>
+        <div class="step-arrow" aria-hidden="true">→</div>
         <div class="step-item">
           <div class="step-num">4</div>
-          <h4>Verifica</h4>
-          <p>Guarda tu recibo y comprueba en la blockchain</p>
+          <h4>{{ $t('home.how_it_works.steps.4.title') }}</h4>
+          <p>{{ $t('home.how_it_works.steps.4.desc') }}</p>
         </div>
       </div>
     </section>
 
     <!-- CTA -->
-    <section class="cta-section">
+    <section class="cta-section" aria-labelledby="cta-title">
       <div class="glass-panel cta-card">
-        <h2>Tu voto cuenta</h2>
-        <p>Participa en la construcción de un Chihuahua más democrático y transparente.</p>
-        <router-link to="/urna" class="btn btn-primary">Comenzar a Votar</router-link>
+        <h2 id="cta-title">{{ $t('home.cta.title') }}</h2>
+        <p>{{ $t('home.cta.desc') }}</p>
+        <router-link to="/urna" class="btn btn-primary">{{ $t('home.cta.button') }}</router-link>
       </div>
     </section>
   </div>
@@ -236,5 +237,17 @@
 .cta-card p {
   color: var(--text-muted);
   max-width: 500px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
 }
 </style>

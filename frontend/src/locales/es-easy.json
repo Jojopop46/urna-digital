@@ -12,7 +12,36 @@
     "subtitle": "Vota de forma segura y transparente desde cualquier lugar de Chihuahua.",
     "vote": "Votar",
     "results": "Resultados",
-    "propose": "Proponer"
+    "propose": "Proponer",
+    "badge": "Seguro · Transparente · Accesible",
+    "features": {
+      "anonymous": {
+        "title": "Voto Anónimo",
+        "desc": "Nadie puede saber por quién votaste. Tu identidad está protegida."
+      },
+      "transparent": {
+        "title": "Transparencia Total",
+        "desc": "Puedes verificar tu voto en cualquier momento."
+      },
+      "offline": {
+        "title": "Funciona Sin Internet",
+        "desc": "Puedes preparar tu voto sin internet y enviarlo después."
+      }
+    },
+    "how_it_works": {
+      "title": "¿Cómo funciona?",
+      "steps": {
+        "1": { "title": "Identifícate", "desc": "Escribe tu CURP y resuelve la suma" },
+        "2": { "title": "Elige", "desc": "Escoge la propuesta que más te guste" },
+        "3": { "title": "Confirma", "desc": "Revisa y envía tu voto" },
+        "4": { "title": "Verifica", "desc": "Guarda tu comprobante y revisa que esté bien" }
+      }
+    },
+    "cta": {
+      "title": "Tu voto cuenta",
+      "desc": "Ayuda a construir un Chihuahua más justo y transparente.",
+      "button": "Comenzar a Votar"
+    }
   },
   "wizard": {
     "step1_label": "Identidad",
@@ -23,10 +52,12 @@
     "step2_title": "Elige una propuesta",
     "step3_title": "¿Es tu voto?",
     "step4_title": "Comprobante de voto",
-    "step1_title": "Escribe tu número de credencial",
-    "step2_title": "Elige una propuesta",
-    "step3_title": "¿Es tu voto?",
-    "step4_title": "Comprobante de voto",
+    "step_desc": {
+      "1": "Escribe tu credencial de elector para continuar.",
+      "2": "Elige una propuesta. Puedes cambiar antes de confirmar.",
+      "3": "Revisa bien. No podrás cambiar tu voto después.",
+      "4": "Tu voto quedó guardado de forma segura."
+    },
     "ine_label": "Tu CURP o número de la credencial de elector",
     "ine_placeholder": "18 letras y números",
     "ine_error_length": "Debe tener 18 caracteres.",
@@ -43,18 +74,147 @@
     "success_title": "¡Votaste!",
     "success_desc": "Tu voto quedó guardado de forma segura y anónima.",
     "receipt_hash": "Número de comprobante:",
+    "receipt_hint": "Guarda este número. Puedes revisar tu voto cuando quieras.",
     "download_receipt": "Guarda tu comprobante",
     "finish": "Salir",
     "offline_banner": "Sin internet — Tu elección está guardada. Conéctate para votar.",
-    "network_error": "No se pudo enviar el voto por falta de internet. Inténtalo de nuevo."
+    "network_error": "No se pudo enviar el voto por falta de internet. Inténtalo de nuevo.",
+    "offline_msg": "Necesitas internet para enviar tu voto",
+    "progress_label": "Avance de la votación"
   },
   "transparency": {
-    "live_chart": "Gráfica de resultados en tiempo real"
+    "title": "Transparencia y Resultados",
+    "subtitle": "Datos públicos en tiempo real. Cada voto se puede revisar.",
+    "live_chart": "Gráfica de resultados en tiempo real",
+    "stats": {
+      "proposals": "Propuestas activas",
+      "votes": "Votos registrados",
+      "blocks": "Bloques en cadena"
+    },
+    "live_badge": "En vivo",
+    "empty_state": "Aún no hay votos. ¡Sé el primero en participar!",
+    "info": {
+      "transparency": {
+        "title": "¿Cómo se garantiza la transparencia?",
+        "items": [
+          "Cada voto se guarda en una lista pública",
+          "Se revisa que todo esté correcto en tiempo real",
+          "Cualquier persona puede verificar su voto con el comprobante"
+        ]
+      },
+      "privacy": {
+        "title": "¿Dónde está mi información personal?",
+        "items": [
+          "No guardamos tu CURP ni datos personales",
+          "Usamos tecnología para proteger tu identidad",
+          "Tu identidad nunca se une a tu voto"
+        ]
+      }
+    }
+  },
+  "verify": {
+    "title": "Revisa tu voto",
+    "subtitle": "Escribe el código de tu comprobante para confirmar que está registrado.",
+    "form": {
+      "label": "Código de comprobante",
+      "placeholder": "Ej: 00dbcbf743b775128c9..."
+    },
+    "button": "Revisar en blockchain",
+    "result": {
+      "success": {
+        "title": "Voto revisado",
+        "desc": "Tu voto está guardado en el bloque #{block}. Nadie lo ha modificado."
+      },
+      "error": {
+        "title": "Voto no encontrado",
+        "desc": "Este código no está registrado. Revisa que lo hayas escrito bien."
+      },
+      "demo": {
+        "title": "Revisión local (modo de prueba)",
+        "desc": "El código parece correcto. En la versión final se revisaría en la blockchain."
+      },
+      "server_error": {
+        "title": "No se pudo revisar",
+        "desc": "El servidor no responde. Intenta más tarde."
+      }
+    },
+    "tips": {
+      "title": "Consejos",
+      "items": [
+        "Tu comprobante se descargó automáticamente como archivo .txt al votar.",
+        "El código es un número único que identifica tu voto de forma anónima.",
+        "Si perdiste tu comprobante, no puedes recuperarlo. ¡Guárdalo bien!"
+      ]
+    }
+  },
+  "admin": {
+    "login": {
+      "title": "Panel Administrativo IEE",
+      "subtitle": "Solo personal autorizado puede entrar.",
+      "user_label": "Usuario",
+      "user_placeholder": "Ej. IEE1",
+      "pass_label": "Contraseña",
+      "pass_placeholder": "Contraseña",
+      "button": "Entrar",
+      "error": "Usuario o contraseña incorrectos"
+    },
+    "dashboard": {
+      "title": "Panel de Administración",
+      "subtitle": "Revisar propuestas y ver votos",
+      "logout": "Salir"
+    },
+    "settings": {
+      "title": "Configuración",
+      "deadline_label": "Fecha límite para votar"
+    },
+    "admins": {
+      "title": "Administradores",
+      "user_label": "Nuevo usuario",
+      "user_placeholder": "Ej. IEE2",
+      "pass_label": "Contraseña",
+      "pass_placeholder": "Mínimo 4 caracteres",
+      "button": "Crear administrador",
+      "error_exists": "El usuario ya existe.",
+      "success": "Usuario {user} creado correctamente."
+    },
+    "proposals": {
+      "title": "Propuestas Pendientes",
+      "empty": "No hay propuestas pendientes",
+      "approve": "Aprobar",
+      "reject": "Rechazar"
+    }
+  },
+  "proposals": {
+    "title": "Propuestas Ciudadanas",
+    "success": "¡Propuesta enviada!",
+    "form": {
+      "title_label": "Título",
+      "desc_label": "Descripción",
+      "cost_label": "Costo Estimado",
+      "area_label": "Área",
+      "municipio_label": "Municipio",
+      "submit": "Enviar Propuesta"
+    },
+    "list_title": "Propuestas Aprobadas"
   },
   "language": {
     "select": "Cambiar idioma",
     "es": "Español",
     "es_easy": "Fácil",
     "rar": "Rarámuri"
+  },
+  "a11y": {
+    "skip_to_content": "Saltar al contenido",
+    "copy_hash": "Copiar código",
+    "hash_copied": "Código copiado",
+    "open_menu": "Abrir menú",
+    "close_menu": "Cerrar menú",
+    "dark_mode": "Modo oscuro",
+    "light_mode": "Modo claro",
+    "step_x_of_y": "Paso {step} de {total}: {label}",
+    "vote_option_selected": "Opción elegida",
+    "loading": "Cargando",
+    "menu": "Menú",
+    "clear": "Borrar"
   }
 }

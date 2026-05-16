@@ -2,56 +2,56 @@
   <div class="verificar-container">
     <div class="glass-panel verify-card">
       <div class="verify-header">
-        <div class="verify-icon">🔍</div>
-        <h2>Verifica tu voto</h2>
-        <p>Ingresa el código de tu recibo para confirmar que fue registrado correctamente en la blockchain.</p>
+        <div class="verify-icon" aria-hidden="true">🔍</div>
+        <h1>{{ $t('verify.title') }}</h1>
+        <p>{{ $t('verify.subtitle') }}</p>
       </div>
 
       <div class="form-group">
-        <label for="hash">Código de recibo (hash)</label>
+        <label for="hash">{{ $t('verify.form.label') }}</label>
         <div class="input-wrap">
           <input
             id="hash"
             type="text"
             v-model="hashInput"
-            placeholder="Ej: 00dbcbf743b775128c9..."
+            :placeholder="$t('verify.form.placeholder')"
             class="form-input"
             @keyup.enter="verificar"
           />
-          <button v-if="hashInput" class="clear-btn" @click="hashInput = ''" aria-label="Borrar">✕</button>
+          <button v-if="hashInput" class="clear-btn" @click="hashInput = ''" :aria-label="$t('a11y.clear') || 'Borrar'">✕</button>
         </div>
       </div>
 
       <button class="btn btn-primary w-full" @click="verificar" :disabled="!hashInput || loading">
-        <svg v-if="loading" class="spinner" width="16" height="16" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none" stroke-dasharray="31.4 31.4" transform="rotate(-90 12 12)"><animateTransform attributeName="transform" type="rotate" from="0 12 12" to="360 12 12" dur="1s" repeatCount="indefinite"/></circle></svg>
-        <span v-else>🔎 Verificar en blockchain</span>
+        <svg v-if="loading" class="spinner" aria-hidden="true" focusable="false" width="16" height="16" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none" stroke-dasharray="31.4 31.4" transform="rotate(-90 12 12)"><animateTransform attributeName="transform" type="rotate" from="0 12 12" to="360 12 12" dur="1s" repeatCount="indefinite"/></circle></svg>
+        <span v-else><span aria-hidden="true">🔎</span> {{ $t('verify.button') }}</span>
       </button>
 
-      <!-- Resultado éxito -->
-      <div v-if="resultado?.status === 'success'" class="result-box result-success">
-        <div class="result-icon">✓</div>
-        <div class="result-body">
-          <h4>{{ resultado.titulo }}</h4>
-          <p>{{ resultado.mensaje }}</p>
+      <div aria-live="polite" aria-atomic="true">
+        <!-- Resultado éxito -->
+        <div v-if="resultado?.status === 'success'" class="result-box result-success">
+          <div class="result-icon" aria-hidden="true">✓</div>
+          <div class="result-body">
+            <h2>{{ resultado.titulo }}</h2>
+            <p>{{ resultado.mensaje }}</p>
+          </div>
         </div>
-      </div>
 
-      <!-- Resultado error -->
-      <div v-if="resultado?.status === 'error'" class="result-box result-error">
-        <div class="result-icon">✕</div>
-        <div class="result-body">
-          <h4>{{ resultado.titulo }}</h4>
-          <p>{{ resultado.mensaje }}</p>
+        <!-- Resultado error -->
+        <div v-if="resultado?.status === 'error'" class="result-box result-error">
+          <div class="result-icon" aria-hidden="true">✕</div>
+          <div class="result-body">
+            <h2>{{ resultado.titulo }}</h2>
+            <p>{{ resultado.mensaje }}</p>
+          </div>
         </div>
       </div>
     </div>
 
     <div class="glass-panel tips-card">
-      <h3>💡 Consejos</h3>
+      <h3><span aria-hidden="true">💡</span> {{ $t('verify.tips.title') }}</h3>
       <ul>
-        <li>Tu recibo se descargó automáticamente como archivo <strong>.txt</strong> al votar.</li>
-        <li>El código es un hash único que identifica tu voto de forma anónima.</li>
-        <li>Si perdiste tu recibo, no puedes recuperarlo. ¡Guárdalo bien!</li>
+        <li v-for="(item, i) in $tm('verify.tips.items')" :key="i">{{ item }}</li>
       </ul>
     </div>
   </div>
@@ -59,10 +59,13 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 const hashInput = ref('');
 const loading = ref(false);
-const resultado = ref<{status: 'success'|'error', titulo: string, mensaje: string} | null>(null);
+const resultado = ref<{status: 'success'|'error'|'demo', titulo: string, mensaje: string} | null>(null);
 
 const verificar = async () => {
   loading.value = true;
@@ -76,14 +79,14 @@ const verificar = async () => {
       if (data.encontrado) {
         resultado.value = {
           status: 'success',
-          titulo: 'Voto verificado ✅',
-          mensaje: `Tu voto está registrado en el bloque #${data.block.index}. La blockchain garantiza que no ha sido alterado.`
+          titulo: t('verify.result.success.title'),
+          mensaje: t('verify.result.success.desc', { block: data.block.index })
         };
       } else {
         resultado.value = {
           status: 'error',
-          titulo: 'Voto no encontrado',
-          mensaje: 'Este código no figura en la blockchain. Verifica que lo hayas copiado correctamente.'
+          titulo: t('verify.result.error.title'),
+          mensaje: t('verify.result.error.desc')
         };
       }
     } else {
@@ -92,15 +95,15 @@ const verificar = async () => {
   } catch (error) {
     if (hashInput.value.length > 10) {
       resultado.value = {
-        status: 'success',
-        titulo: 'Verificación local (modo demo)',
-        mensaje: 'El formato del código es válido. En producción se verificaría contra la blockchain.'
+        status: 'demo',
+        titulo: t('verify.result.demo.title'),
+        mensaje: t('verify.result.demo.desc')
       };
     } else {
       resultado.value = {
         status: 'error',
-        titulo: 'No se pudo verificar',
-        mensaje: 'El servidor no responde. Intenta más tarde.'
+        titulo: t('verify.result.server_error.title'),
+        mensaje: t('verify.result.server_error.desc')
       };
     }
   } finally {
@@ -130,7 +133,7 @@ const verificar = async () => {
   font-size: 2.5rem;
   margin-bottom: 0.5rem;
 }
-.verify-header h2 {
+.verify-header h1 {
   font-size: 1.5rem;
   font-weight: 800;
   margin-bottom: 0.5rem;
@@ -217,7 +220,7 @@ const verificar = async () => {
   background: var(--danger);
   color: white;
 }
-.result-body h4 {
+.result-body h2 {
   font-size: 1rem;
   font-weight: 700;
   margin-bottom: 0.25rem;

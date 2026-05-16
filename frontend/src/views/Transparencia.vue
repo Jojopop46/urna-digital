@@ -1,66 +1,62 @@
 <template>
   <div class="transparencia">
     <div class="page-header">
-      <h1 class="page-title">Transparencia y Resultados</h1>
-      <p class="page-subtitle">Datos públicos en tiempo real. Cada voto es verificable.</p>
+      <h1 class="page-title">{{ $t('transparency.title') }}</h1>
+      <p class="page-subtitle">{{ $t('transparency.subtitle') }}</p>
     </div>
 
-    <div class="stats-grid">
+    <div class="stats-grid" role="region" :aria-label="$t('transparency.title')">
       <div class="stat-card glass-panel">
-        <div class="stat-icon" style="background: var(--primary-light); color: var(--primary);">📋</div>
+        <div class="stat-icon" style="background: var(--primary-light); color: var(--primary);"><span aria-hidden="true">📋</span></div>
         <div class="stat-value">{{ approved.length }}</div>
-        <div class="stat-label">Propuestas activas</div>
+        <div class="stat-label">{{ $t('transparency.stats.proposals') }}</div>
       </div>
       <div class="stat-card glass-panel">
-        <div class="stat-icon" style="background: var(--secondary-light); color: var(--secondary);">🗳️</div>
+        <div class="stat-icon" style="background: var(--secondary-light); color: var(--secondary);"><span aria-hidden="true">🗳️</span></div>
         <div class="stat-value">{{ totalVotos }}</div>
-        <div class="stat-label">Votos registrados</div>
+        <div class="stat-label">{{ $t('transparency.stats.votes') }}</div>
       </div>
       <div class="stat-card glass-panel">
-        <div class="stat-icon" style="background: var(--warning-light); color: var(--warning);">🔗</div>
+        <div class="stat-icon" style="background: var(--warning-light); color: var(--warning);"><span aria-hidden="true">🔗</span></div>
         <div class="stat-value">{{ chainHeight }}</div>
-        <div class="stat-label">Bloques en cadena</div>
+        <div class="stat-label">{{ $t('transparency.stats.blocks') }}</div>
       </div>
     </div>
 
-    <div class="glass-panel chart-section">
+    <div class="glass-panel chart-section" role="region" :aria-label="$t('transparency.live_chart')">
       <div class="section-header">
-        <h2>Resultados en vivo</h2>
+        <h2>{{ $t('transparency.live_chart') }}</h2>
         <span class="live-badge">
-          <span class="live-dot"></span> En vivo
+          <span class="live-dot" aria-hidden="true"></span> {{ $t('transparency.live_badge') }}
         </span>
       </div>
       <div v-for="item in resultados" :key="item.id" class="result-row">
         <div class="result-info">
           <span class="result-title">{{ item.titulo }}</span>
-          <span class="result-count">{{ item.votos }} votos</span>
+          <span class="result-count">{{ item.votos }} {{ $t('transparency.stats.votes').toLowerCase() }}</span>
         </div>
-        <div class="result-bar-track">
+        <div class="result-bar-track" role="progressbar" :aria-valuenow="porcentaje(item.votos)" aria-valuemin="0" aria-valuemax="100" :aria-label="item.titulo + ' ' + porcentaje(item.votos) + '%'">
           <div class="result-bar-fill" :style="{ width: porcentaje(item.votos) + '%' }">
             <span v-if="porcentaje(item.votos) > 15" class="result-bar-label">{{ porcentaje(item.votos) }}%</span>
           </div>
         </div>
       </div>
-      <div v-if="!resultados.length" class="empty-state">
-        Aún no hay votos registrados. ¡Sé el primero en participar!
+      <div v-if="!resultados.length" class="empty-state" role="status" aria-live="polite">
+        {{ $t('transparency.empty_state') }}
       </div>
     </div>
 
     <div class="info-grid">
       <div class="glass-panel info-card">
-        <h3>🔐 ¿Cómo se garantiza la transparencia?</h3>
+        <h3><span aria-hidden="true">🔐</span> {{ $t('transparency.info.transparency.title') }}</h3>
         <ul>
-          <li>Cada voto se hashea y se agrega a una blockchain pública</li>
-          <li>La raíz Merkle se calcula en tiempo real</li>
-          <li>Cualquier ciudadano puede verificar su voto con el recibo</li>
+          <li v-for="(item, i) in $tm('transparency.info.transparency.items')" :key="i">{{ item }}</li>
         </ul>
       </div>
       <div class="glass-panel info-card">
-        <h3>🛡️ ¿Dónde está mi información personal?</h3>
+        <h3><span aria-hidden="true">🛡️</span> {{ $t('transparency.info.privacy.title') }}</h3>
         <ul>
-          <li>No almacenamos CURP ni datos personales</li>
-          <li>Usamos pruebas de conocimiento cero (ZK-Proofs)</li>
-          <li>Tu identidad nunca se vincula con tu voto</li>
+          <li v-for="(item, i) in $tm('transparency.info.privacy.items')" :key="i">{{ item }}</li>
         </ul>
       </div>
     </div>
