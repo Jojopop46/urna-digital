@@ -12,12 +12,14 @@
     <div class="sr-only" aria-live="polite" aria-atomic="true">{{ stepAnnouncement }}</div>
     <div class="sr-only" aria-live="polite" aria-atomic="true">{{ copyAnnouncement }}</div>
     <div class="sr-only" aria-live="polite" aria-atomic="true">{{ voiceFeedback }}</div>
+    <div class="sr-only" aria-live="assertive" aria-atomic="true">{{ assertiveAnnouncement }}</div>
 
     <!-- Progress -->
     <div class="progress-bar" role="progressbar" :aria-valuenow="store.paso" aria-valuemin="1" aria-valuemax="4" :aria-label="$t('wizard.progress_label')">
       <div class="progress-fill" :style="{ width: ((store.paso / 4) * 100) + '%' }"></div>
     </div>
 
+    <!-- Voice command bar -->
     <div v-if="voiceSupported" class="voice-cmd-bar">
       <button
         type="button"
@@ -26,6 +28,7 @@
         @click="voiceListening ? stopListening() : startListening()"
         :aria-label="voiceListening ? $t('wizard.voice_cmd.listening') : $t('wizard.voice_cmd.listen')"
         :title="voiceListening ? $t('wizard.voice_cmd.listening') : $t('wizard.voice_cmd.listen')"
+        ref="voiceBtnRef"
       >
         <svg v-if="!voiceListening" aria-hidden="true" focusable="false" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
         <svg v-else aria-hidden="true" focusable="false" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/><circle cx="12" cy="12" r="10" stroke-dasharray="4 2"/></svg>
@@ -50,11 +53,11 @@
 
     <div class="wizard-card glass-panel">
       <!-- Paso 1: Identidad -->
-      <div v-if="store.paso === 1" class="step-content">
+      <div v-if="store.paso === 1" class="step-content" role="region" :aria-label="$t('wizard.step1_title')">
         <div class="step-header">
           <div class="step-icon" aria-hidden="true">🪪</div>
-          <h2 ref="stepTitleRef" tabindex="-1">{{ $t('wizard.step1_title') }}</h2>
-          <p class="step-desc">{{ $t('wizard.step_desc.1') }}</p>
+          <h2 ref="stepTitleRef" tabindex="-1" id="step-title">{{ $t('wizard.step1_title') }}</h2>
+          <p class="step-desc" id="step-desc">{{ $t('wizard.step_desc.1') }}</p>
           <button type="button" class="voice-guide-btn" @click="readVoiceGuide(1)" :aria-label="$t('wizard.voice_guide.repeat')">
             <svg aria-hidden="true" focusable="false" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
             {{ $t('wizard.voice_guide.repeat') }}
@@ -72,8 +75,11 @@
             :placeholder="$t('wizard.ine_placeholder')"
             class="form-input"
             :aria-invalid="!!ineError"
-            :aria-describedby="ineError ? 'ine-error' : undefined"
+            :aria-describedby="ineError ? 'ine-error step-desc' : 'step-desc'"
             @keyup.enter="validarIdentidad"
+            autocomplete="off"
+            autocorrect="off"
+            autocapitalize="characters"
           />
           <p v-if="ineError" id="ine-error" class="error-msg" role="alert">
             <svg aria-hidden="true" focusable="false" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
@@ -83,7 +89,7 @@
 
         <div class="captcha-box">
           <span class="captcha-label">{{ $t('wizard.captcha_label') }}</span>
-          <p class="captcha-desc">{{ $t('wizard.captcha_desc') }}</p>
+          <p class="captcha-desc" id="captcha-desc">{{ $t('wizard.captcha_desc') }}</p>
           <div class="captcha-row">
             <div class="captcha-challenge" aria-hidden="true">{{ captchaA }} + {{ captchaB }}</div>
             <span class="captcha-eq" aria-hidden="true">=</span>
@@ -93,6 +99,7 @@
               class="form-input captcha-input"
               :placeholder="$t('wizard.captcha_placeholder') || '?'"
               :aria-label="$t('wizard.captcha_desc')"
+              aria-describedby="captcha-desc"
             />
             <span v-if="captchaInput && captchaValido" class="captcha-check" aria-hidden="true">✓</span>
           </div>
@@ -105,11 +112,11 @@
       </div>
 
       <!-- Paso 2: Selección -->
-      <div v-else-if="store.paso === 2" class="step-content">
+      <div v-else-if="store.paso === 2" class="step-content" role="region" :aria-label="$t('wizard.step2_title')">
         <div class="step-header">
           <div class="step-icon" aria-hidden="true">📋</div>
-          <h2 ref="stepTitleRef" tabindex="-1">{{ $t('wizard.step2_title') }}</h2>
-          <p class="step-desc">{{ $t('wizard.step_desc.2') }}</p>
+          <h2 ref="stepTitleRef" tabindex="-1" id="step-title">{{ $t('wizard.step2_title') }}</h2>
+          <p class="step-desc" id="step-desc">{{ $t('wizard.step_desc.2') }}</p>
           <button type="button" class="voice-guide-btn" @click="readVoiceGuide(2)" :aria-label="$t('wizard.voice_guide.repeat')">
             <svg aria-hidden="true" focusable="false" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
             {{ $t('wizard.voice_guide.repeat') }}
@@ -125,16 +132,18 @@
             :class="{ active: store.seleccion === opcion.id }"
             role="radio"
             :aria-checked="store.seleccion === opcion.id"
-            @click="store.seleccion = opcion.id"
+            :aria-posinset="idx + 1"
+            :aria-setsize="opciones.length"
+            @click="selectOption(opcion.id as number, idx)"
             @keydown="handleOptionKeydown($event, idx)"
             :tabindex="store.seleccion === opcion.id ? 0 : -1"
           >
-            <div class="option-check">
-              <div class="option-check-inner" v-if="store.seleccion === opcion.id" aria-hidden="true">✓</div>
+            <div class="option-check" aria-hidden="true">
+              <div class="option-check-inner" v-if="store.seleccion === opcion.id">✓</div>
             </div>
             <div class="option-body">
-              <h3>{{ opcion.titulo }}</h3>
-              <p class="option-desc">{{ opcion.descripcion }}</p>
+              <h3 :id="`opt-title-${opcion.id}`">{{ opcion.titulo }}</h3>
+              <p class="option-desc" :id="`opt-desc-${opcion.id}`">{{ opcion.descripcion }}</p>
               <div class="option-meta">
                 <span class="meta-tag"><svg aria-hidden="true" focusable="false" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg> {{ opcion.municipio }}</span>
                 <span class="meta-tag"><svg aria-hidden="true" focusable="false" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M2 12h20"/></svg> {{ opcion.area }}</span>
@@ -154,11 +163,11 @@
       </div>
 
       <!-- Paso 3: Confirmación -->
-      <div v-else-if="store.paso === 3" class="step-content">
+      <div v-else-if="store.paso === 3" class="step-content" role="region" :aria-label="$t('wizard.step3_title')">
         <div class="step-header">
           <div class="step-icon" aria-hidden="true">⚠️</div>
-          <h2 ref="stepTitleRef" tabindex="-1">{{ $t('wizard.step3_title') }}</h2>
-          <p class="step-desc">{{ $t('wizard.step_desc.3') }}</p>
+          <h2 ref="stepTitleRef" tabindex="-1" id="step-title">{{ $t('wizard.step3_title') }}</h2>
+          <p class="step-desc" id="step-desc">{{ $t('wizard.step_desc.3') }}</p>
           <button type="button" class="voice-guide-btn" @click="readVoiceGuide(3)" :aria-label="$t('wizard.voice_guide.repeat')">
             <svg aria-hidden="true" focusable="false" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
             {{ $t('wizard.voice_guide.repeat') }}
@@ -166,7 +175,7 @@
         </div>
 
         <div class="confirm-box" v-if="opcionSeleccionada">
-          <div class="confirm-option">
+          <div class="confirm-option" role="group" :aria-label="$t('wizard.step3_title')">
             <span class="confirm-label">{{ $t('wizard.step3_title') }}</span>
             <h3 class="confirm-title">{{ opcionSeleccionada.titulo }}</h3>
             <p class="confirm-desc">{{ opcionSeleccionada.descripcion }}</p>
@@ -178,7 +187,7 @@
               <span class="cost">{{ opcionSeleccionada.costo }}</span>
             </div>
           </div>
-          <div class="confirm-warning">
+          <div class="confirm-warning" role="alert">
             <svg aria-hidden="true" focusable="false" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
             {{ $t('wizard.review_warning') }}
           </div>
@@ -198,13 +207,13 @@
       </div>
 
       <!-- Paso 4: Recibo -->
-      <div v-else-if="store.paso === 4" class="step-content">
+      <div v-else-if="store.paso === 4" class="step-content" role="region" :aria-label="$t('wizard.step4_title')">
         <div class="receipt-success">
-          <div class="success-ring">
-            <div class="success-icon" aria-hidden="true">✓</div>
+          <div class="success-ring" aria-hidden="true">
+            <div class="success-icon">✓</div>
           </div>
-          <h2 ref="stepTitleRef" tabindex="-1">{{ $t('wizard.success_title') }}</h2>
-          <p class="receipt-desc">{{ $t('wizard.success_desc') }}</p>
+          <h2 ref="stepTitleRef" tabindex="-1" id="step-title">{{ $t('wizard.success_title') }}</h2>
+          <p class="receipt-desc" id="step-desc">{{ $t('wizard.success_desc') }}</p>
           <button type="button" class="voice-guide-btn" @click="readVoiceGuide(4)" :aria-label="$t('wizard.voice_guide.repeat')">
             <svg aria-hidden="true" focusable="false" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
             {{ $t('wizard.voice_guide.repeat') }}
@@ -212,9 +221,9 @@
         </div>
 
         <div class="receipt-card">
-          <label>{{ $t('wizard.receipt_hash') }}</label>
+          <label for="receipt-hash">{{ $t('wizard.receipt_hash') }}</label>
           <div class="receipt-hash">
-            <code>{{ recibo }}</code>
+            <code id="receipt-hash">{{ recibo }}</code>
             <button class="copy-btn" @click="copiarRecibo" :aria-label="$t('a11y.copy_hash')">
               <svg aria-hidden="true" focusable="false" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
             </button>
@@ -245,10 +254,12 @@ import { useCryptoRandom } from '../composables/useCryptoRandom';
 import { api } from '../services/api';
 import { speak } from '../composables/useTTS';
 import { useVoiceCommand, startListening, stopListening } from '../composables/useVoiceCommand';
+import { useAnnouncer } from '../composables/useAnnouncer';
 
 const { t } = useI18n();
 const { randomId } = useCryptoRandom();
 const { isSupported: voiceSupported, isListening: voiceListening, lastCommand: voiceLastCommand, transcript: voiceTranscript } = useVoiceCommand();
+const { assertiveAnnounce } = useAnnouncer();
 
 const readVoiceGuide = (step: number) => {
   const key = `wizard.voice_guide.step_${step}` as const;
@@ -270,6 +281,10 @@ const readCurrentScreen = () => {
   }
   speak(text);
 };
+
+const voiceHelpText = computed(() =>
+  t('wizard.voice_cmd.help_text')
+);
 
 watch(voiceLastCommand, (cmd) => {
   if (!cmd) return;
@@ -296,8 +311,15 @@ watch(voiceLastCommand, (cmd) => {
     finalizar();
   } else if (cmd.type === 'read_screen') {
     readCurrentScreen();
+  } else if (cmd.type === 'help') {
+    speak(voiceHelpText.value);
+  } else if (cmd.type === 'focus_first') {
+    stepTitleRef.value?.focus();
+  } else if (cmd.type === 'stop') {
+    window.speechSynthesis?.cancel();
   }
 });
+
 const store = useUrnaStore();
 const ine = ref('');
 const ineError = ref('');
@@ -311,7 +333,10 @@ const networkError = ref(false);
 const isOnline = ref(navigator.onLine);
 const stepTitleRef = ref<HTMLHeadingElement | null>(null);
 const optionRefs = ref<HTMLButtonElement[]>([]);
+
 const copyAnnouncement = ref('');
+const assertiveAnnouncement = ref('');
+
 const voiceFeedback = computed(() => {
   if (voiceListening.value) return t('wizard.voice_cmd.listening');
   if (voiceTranscript.value) return t('wizard.voice_cmd.heard', { text: voiceTranscript.value });
@@ -341,11 +366,22 @@ const goToStep = (step: number) => {
   store.paso = step;
 };
 
+const selectOption = (id: number, idx: number) => {
+  store.seleccion = id;
+  nextTick(() => {
+    optionRefs.value[idx]?.focus();
+  });
+};
+
+
+
 watch(() => store.paso, () => {
   nextTick(() => {
     stepTitleRef.value?.focus();
     const label = t(steps[store.paso - 1]?.labelKey || '');
-    speak(t('a11y.step_x_of_y', { step: store.paso, total: 4, label }));
+    const announcement = t('a11y.step_x_of_y', { step: store.paso, total: 4, label });
+    assertiveAnnounce(announcement);
+    speak(announcement);
     readVoiceGuide(store.paso);
   });
 });
@@ -356,6 +392,7 @@ const validarIdentidad = () => {
   ineError.value = '';
   if (ine.value.length !== 18 || !INE_REGEX.test(ine.value)) {
     ineError.value = t('wizard.ine_error_length');
+    assertiveAnnounce(ineError.value);
     speak(ineError.value);
     return;
   }
@@ -402,10 +439,12 @@ const emitirVoto = async () => {
     });
     clearTimeout(id);
     recibo.value = data.block_hash || data.nullifier || data.receipt_token;
+    assertiveAnnounce(t('wizard.success_title'));
     speak(t('wizard.success_title'));
   } catch (e: any) {
     networkError.value = true;
     ineError.value = e.message || t('wizard.network_error');
+    assertiveAnnounce(ineError.value);
     speak(ineError.value);
     isSubmitting.value = false;
     return;
@@ -433,6 +472,7 @@ const descargarComprobante = () => {
 const copiarRecibo = () => {
   navigator.clipboard.writeText(recibo.value);
   copyAnnouncement.value = t('a11y.hash_copied');
+  assertiveAnnounce(copyAnnouncement.value);
   speak(copyAnnouncement.value);
   setTimeout(() => { copyAnnouncement.value = ''; }, 2000);
 };
@@ -449,6 +489,11 @@ onMounted(async () => {
   } catch {
     // mantener props vacías si falla
   }
+  // Focus inicial para lectores de pantalla
+  nextTick(() => {
+    stepTitleRef.value?.focus();
+    readVoiceGuide(store.paso);
+  });
 });
 
 onUnmounted(() => {

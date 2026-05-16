@@ -24,6 +24,8 @@
   --radius-lg: 16px;
   --radius-xl: 24px;
   --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  --font-base: 16px;
+  --line-base: 1.6;
 }
 
 :root[data-theme="dark"] {
@@ -60,9 +62,9 @@
   }
 }
 
-html { font-size: 16px; scroll-behavior: smooth; }
-@media (max-width: 768px) { html { font-size: 16px; } }
-@media (max-width: 480px) { html { font-size: 16px; } }
+html { font-size: var(--font-base); scroll-behavior: smooth; }
+@media (max-width: 768px) { html { font-size: var(--font-base); } }
+@media (max-width: 480px) { html { font-size: var(--font-base); } }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -72,7 +74,7 @@ body {
   color: var(--text-main);
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
-  line-height: 1.6;
+  line-height: var(--line-base);
 }
 
 #app { display: flex; flex-direction: column; min-height: 100vh; }
@@ -238,7 +240,7 @@ body {
   border-radius: var(--radius-sm);
 }
 
-/* High Contrast Mode */
+/* High Contrast Mode (OS) */
 @media (prefers-contrast: more) {
   :root {
     --primary: #0000CC;
@@ -275,6 +277,94 @@ body {
     outline: 2px solid var(--primary);
     outline-offset: 2px;
   }
+}
+
+/* ─── Manual Accessibility Classes ─── */
+
+/* Font sizes */
+html.font-large  { --font-base: 18px; }
+html.font-xlarge { --font-base: 20px; }
+
+/* High contrast manual */
+html.high-contrast {
+  --primary: #0000EE;
+  --primary-light: #E0E8FF;
+  --primary-hover: #0000CC;
+  --secondary: #008800;
+  --secondary-light: #E0F5E0;
+  --warning: #CC7700;
+  --warning-light: #FFF5E0;
+  --danger: #CC0000;
+  --danger-light: #FFE0E0;
+  --bg-color: #FFFFFF;
+  --bg-elevated: #FFFFFF;
+  --text-main: #000000;
+  --text-muted: #333333;
+  --text-inverse: #FFFFFF;
+  --panel-bg: #FFFFFF;
+  --panel-border: #000000;
+  --panel-shadow: none;
+  --panel-shadow-lg: none;
+}
+
+html.high-contrast body {
+  background-image: none !important;
+}
+
+html.high-contrast .glass-panel,
+html.high-contrast .btn,
+html.high-contrast .form-input,
+html.high-contrast .nav-bar,
+html.high-contrast .wizard-card,
+html.high-contrast .option-card,
+html.high-contrast .feature-card,
+html.high-contrast .hero-card,
+html.high-contrast .cta-card,
+html.high-contrast .captcha-box,
+html.high-contrast .confirm-option,
+html.high-contrast .receipt-card {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  box-shadow: none !important;
+  border: 2px solid var(--panel-border) !important;
+}
+
+html.high-contrast .btn-primary {
+  background: var(--primary) !important;
+  color: #FFFFFF !important;
+}
+
+html.high-contrast .btn-outline {
+  background: transparent !important;
+  color: var(--primary) !important;
+  border: 2px solid var(--primary) !important;
+}
+
+html.high-contrast :focus-visible {
+  outline: 3px solid var(--primary) !important;
+  outline-offset: 3px !important;
+}
+
+/* Reduced motion */
+html.reduced-motion *,
+html.reduced-motion *::before,
+html.reduced-motion *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+}
+
+/* Screen-reader only */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
 }
 
 /* Utilities */

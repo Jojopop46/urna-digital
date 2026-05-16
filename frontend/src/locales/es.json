@@ -93,7 +93,8 @@
       "listen": "Comando de voz",
       "listening": "Escuchando... di un comando",
       "not_supported": "Tu navegador no soporta comandos de voz",
-      "heard": "Escuché: {text}"
+      "heard": "Escuché: {text}",
+      "help_text": "Comandos disponibles: siguiente, atrás, confirmar, repetir, cancelar, leer pantalla, seleccionar opción número, ayuda, silencio."
     }
   },
   "transparency": {
@@ -234,5 +235,29 @@
     "tts_on": "Activar lector de pantalla",
     "tts_off": "Desactivar lector de pantalla",
     "tts_active": "Lector de pantalla activado"
+  },
+  "a11y_panel": {
+    "title": "Accesibilidad",
+    "open": "Abrir panel de accesibilidad",
+    "close": "Cerrar panel de accesibilidad",
+    "tts": "Lector de pantalla",
+    "tts_desc": "Lee en voz alta los elementos al navegar",
+    "speed": "Velocidad de voz",
+    "speed_desc": "Ajusta qué tan rápido habla el lector",
+    "pitch": "Tono de voz",
+    "pitch_desc": "Ajusta el tono del lector",
+    "font": "Tamaño de texto",
+    "font_desc": "Aumenta o reduce el texto de toda la página",
+    "contrast": "Alto contraste",
+    "contrast_desc": "Mejora la diferenciación de colores",
+    "motion": "Reducir animaciones",
+    "motion_desc": "Deshabilita transiciones y movimientos",
+    "voice": "Comandos de voz",
+    "voice_desc": "Activa controles por voz durante la votación",
+    "shortcuts_title": "Atajos de teclado",
+    "shortcut_panel": "Abrir este panel",
+    "shortcut_voice": "Escuchar comando de voz",
+    "shortcut_tts": "Activar/desactivar lector",
+    "shortcut_tab": "Navegar entre elementos"
   }
 }

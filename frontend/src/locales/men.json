@@ -93,7 +93,8 @@
       "listen": "Stimmkommando",
       "listening": "Heet... säg en Kommando",
       "not_supported": "Dien Browser unnerstött kjeene Stimmkommandos",
-      "heard": "Ehet heet: {text}"
+      "heard": "Ehet heet: {text}",
+      "help_text": "Verfügbare Kommandos: nächst, torück, bestätijen, wieajersähn, ofbreken, Bildschirm liesen, Utwahl selektieren, Hülp, Stell."
     }
   },
   "transparency": {
@@ -234,5 +235,29 @@
     "tts_on": "Bildschirmleser anschalten",
     "tts_off": "Bildschirmleser usschalten",
     "tts_active": "Bildschirmleser es an"
+  },
+  "a11y_panel": {
+    "title": "Tugänglichkeit",
+    "open": "Tugänglichkeitspanel opmaken",
+    "close": "Tugänglichkeitspanel tomaken",
+    "tts": "Bildschirmleser",
+    "tts_desc": "Liest Elemente beem Navigieren vor",
+    "speed": "Sprechtempo",
+    "speed_desc": "Wie schnell dee Leser spricht",
+    "pitch": "Stimmlage",
+    "pitch_desc": "Tonhöhe vom Leser",
+    "font": "Textgröße",
+    "font_desc": "Textgröße op dee ganze Siet",
+    "contrast": "Hoochkontrast",
+    "contrast_desc": "Verbessert Farbunnerscheed",
+    "motion": "Bewejungen reduzieren",
+    "motion_desc": "Deaktiviert Übergänje un Bewejungen",
+    "voice": "Stimmkommandos",
+    "voice_desc": "Aktiviert Stimmsteuerung beem Stimm",
+    "shortcuts_title": "Tastaturkürzel",
+    "shortcut_panel": "Dies Panel opmaken",
+    "shortcut_voice": "Stimmkommando heet",
+    "shortcut_tts": "Leser an-/usschalten",
+    "shortcut_tab": "Tussen Elemente navigieren"
   }
 }
