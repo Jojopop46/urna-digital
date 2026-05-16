@@ -41,6 +41,10 @@
       "title": "Tu voto cuenta",
       "desc": "Participa en la construcción de un Chihuahua más democrático y transparente.",
       "button": "Comenzar a Votar"
+    },
+    "featured": {
+      "title": "Propuestas Destacadas",
+      "view_all": "Ver todas"
     }
   },
   "wizard": {

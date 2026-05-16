@@ -41,6 +41,10 @@
       "title": "Tu voto cuenta",
       "desc": "Ayuda a construir un Chihuahua más justo y transparente.",
       "button": "Comenzar a Votar"
+    },
+    "featured": {
+      "title": "Propuestas destacadas",
+      "view_all": "Ver todas"
     }
   },
   "wizard": {

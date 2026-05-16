@@ -70,6 +70,25 @@
       </div>
     </section>
 
+    <!-- Propuestas destacadas -->
+    <section class="featured-proposals-section" aria-labelledby="featured-title" v-if="featuredProposals.length">
+      <div class="section-header">
+        <h2 id="featured-title">{{ $t('home.featured.title') }}</h2>
+        <router-link to="/proposals" class="view-all-link">{{ $t('home.featured.view_all') }} →</router-link>
+      </div>
+      <div class="featured-grid">
+        <div v-for="p in featuredProposals" :key="p.id" class="glass-panel featured-card">
+          <div class="featured-status" :class="`status-${p.status}`">{{ statusLabel(p.status) }}</div>
+          <h3>{{ p.titulo }}</h3>
+          <p>{{ p.descripcion }}</p>
+          <div class="featured-meta">
+            <span v-if="p.municipio" class="meta-tag"><span aria-hidden="true">📍</span> {{ p.municipio }}</span>
+            <span v-if="p.area" class="meta-tag"><span aria-hidden="true">💡</span> {{ p.area }}</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- CTA -->
     <section class="cta-section" aria-labelledby="cta-title">
       <div class="glass-panel cta-card">
@@ -80,6 +99,38 @@
     </section>
   </div>
 </template>
+
+<script setup lang="ts">
+import { computed, onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
+import { useUrnaStore } from '../stores/useUrnaStore';
+import { api } from '../services/api';
+
+const { t } = useI18n();
+const store = useUrnaStore();
+
+const featuredProposals = computed(() => store.props.filter((p) => p.status === 'approved').slice(0, 3));
+
+function statusLabel(status: string) {
+  const map: Record<string, string> = {
+    pending: t('proposals.status.pending'),
+    approved: t('proposals.status.approved'),
+    rejected: t('proposals.status.rejected'),
+  };
+  return map[status] ?? status;
+}
+
+onMounted(async () => {
+  if (store.props.length === 0) {
+    try {
+      const data = await api.get('/api/v1/proposals?status=approved');
+      store.props = data;
+    } catch {
+      // silently fail
+    }
+  }
+});
+</script>
 
 <style scoped>
 .home { display: flex; flex-direction: column; gap: 2.5rem; }
@@ -250,4 +301,19 @@
   white-space: nowrap;
   border-width: 0;
 }
+
+/* Featured proposals */
+.featured-proposals-section { display: flex; flex-direction: column; gap: 1rem; }
+.section-header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem; }
+.section-header h2 { font-size: clamp(1.25rem, 3vw, 1.5rem); font-weight: 800; color: var(--text-main); }
+.view-all-link { color: var(--primary); font-weight: 600; text-decoration: none; font-size: 0.95rem; }
+.view-all-link:hover { text-decoration: underline; }
+.featured-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem; }
+.featured-card { padding: 1.5rem; display: flex; flex-direction: column; gap: 0.5rem; }
+.featured-card h3 { font-size: 1.05rem; font-weight: 700; color: var(--primary); }
+.featured-card p { color: var(--text-muted); font-size: 0.9rem; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.featured-status { align-self: flex-start; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; padding: 0.2rem 0.55rem; border-radius: 999px; }
+.status-approved { background: #10b981; color: #fff; }
+.featured-meta { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: auto; padding-top: 0.5rem; }
+.meta-tag { display: inline-flex; align-items: center; gap: 0.25rem; background: var(--panel-border); padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.8rem; color: var(--text-main); }
 </style>

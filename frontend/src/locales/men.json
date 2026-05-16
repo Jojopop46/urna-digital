@@ -41,6 +41,10 @@
       "title": "Dien Stimm zellt",
       "desc": "Nimm teil am Bo von en demokratischer un transparenter Chihuahua.",
       "button": "Stimm beginnen"
+    },
+    "featured": {
+      "title": "Vörschlääj",
+      "view_all": "Alle sähn"
     }
   },
   "wizard": {
